@@ -1,0 +1,12 @@
+.DS_store
+
+neuron_image_analysis
+neuron_image_analysis/*
+neuron_image_analysis/*/*
+neuron_image_analysis/*/*/*
+
+meeting_and_analysis/
+meeting_and_analysis/*
+meeting_and_analysis/*/*
+meeting_and_analysis/*/*/*
+meeting_and_analysis/*/*/*/*
