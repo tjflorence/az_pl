@@ -29,7 +29,6 @@ expi.settings.test_stim_time = 15;
 expi.settings.align_time     = 0;
 expi.settings.trial_time     = expi.settings.prestim_time+expi.settings.ref_stim_time+expi.settings.poststim_time;
 
-expi.settings.prefix(1).text = 'OL_stim';
 expi.settings.ball_diameter = 9;
 expi.settings.ticks_per_mm = 3.5;
 expi.settings.ticks_per_deg = (expi.settings.ball_diameter)*pi*expi.settings.ticks_per_mm/360;
