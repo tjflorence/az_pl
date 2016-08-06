@@ -119,7 +119,7 @@ for jj = 1:num_expfiles
 
 
 
-        save(all_files(jj).name, 'expr', '-v7.3')
+        save(all_files(jj).name, 'expr', '-v6')
     end
 
 end

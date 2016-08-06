@@ -14,6 +14,7 @@ function parse_azPL_experiment(bdir, idir, expver, test_length)
 sample_rate = 10000;
 %test_length = 65;
 sync_sample_num = round(.9*sample_rate*test_length);
+acceptable_framedrop_time = 10;
 
 cd(bdir);
 
@@ -176,7 +177,7 @@ for ii = 1:length(bsort)
    end
     
    if expr.c_trial.bdata.count >= ( ((expr.settings.dark_time+expr.settings.fix_time+...
-           expr.settings.trial_time)*expr.settings.hz)-(5.5*expr.settings.hz));
+           expr.settings.trial_time)*expr.settings.hz)-(acceptable_framedrop_time*expr.settings.hz));
        no_berror = 1;
    else
        disp('behavior frame drop error')

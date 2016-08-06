@@ -57,7 +57,7 @@ thresh_map = zeros(size(max_mat));
 thresh_map(max_mat>thresh_bg) = 1;
 
 %% threshold selection
-for ii = 1:size(df_mat, 3)
+parfor ii = 1:size(df_mat, 3)
    
     c_frame = df_mat(:,:,ii);
     c_frame(~thresh_map) = 0;

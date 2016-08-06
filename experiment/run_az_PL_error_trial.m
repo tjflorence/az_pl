@@ -67,7 +67,7 @@ appr.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
 
 expi = expr;
 cd(expi.settings.fullpath)
-save(expi.c_trial.name, 'expr', '-v7.3');
+save(expi.c_trial.name, 'expr', '-v6');
 
 end
 

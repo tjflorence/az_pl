@@ -1,4 +1,4 @@
-function add_azPL_roi_data(expdir)
+function add_azPL_auto_roi_data(expdir)
 
 cd(expdir)
 exp_files = dir('env*');
@@ -25,7 +25,7 @@ for aa = 1:length(exp_files)
         end
     end
     
-    save(exp_files(aa).name, 'expr', '-v7.3')
+    save(exp_files(aa).name, 'expr', '-v6')
     end
     
     
@@ -49,7 +49,7 @@ for aa = 1:length(ol_files)
         end
     end
     
-    save(ol_files(aa).name, 'expr', '-v7.3')
+    save(ol_files(aa).name, 'expr', '-v6')
     
     end
 end
