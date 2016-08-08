@@ -176,6 +176,15 @@ for ii = 1:length(bsort)
     expr.c_trial = rmfield(expr.c_trial, 'data');
    end
     
+   
+      if ~isfield(expr.settings, 'dark_time')
+         expr.settings.dark_time = 0;
+      end
+      
+      if ~isfield(expr.settings, 'fix_time')
+         expr.settings.fix_time = 0;
+      end
+   
    if expr.c_trial.bdata.count >= ( ((expr.settings.dark_time+expr.settings.fix_time+...
            expr.settings.trial_time)*expr.settings.hz)-(acceptable_framedrop_time*expr.settings.hz));
        no_berror = 1;

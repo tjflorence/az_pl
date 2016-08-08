@@ -25,7 +25,20 @@ for c_roi = 1:length(roi_struct)
        
         load(train_files(c_trial).name)
         
-        first_cool = find(expr.c_trial.bdata.laser_power<-4, 1, 'first');
+        if isfield(expr.c_trial, 'idata')
+            
+            cool_half_second = zeros(1,length(expr.c_trial.bdata.laser_power)-25);
+            for ii = 1:(length(expr.c_trial.bdata.laser_power)-25)
+                test_vec = expr.c_trial.bdata.laser_power(ii:ii+25);
+                num_cool_frames = numel(find(test_vec<expr.settings.light_power));
+                
+                if num_cool_frames == length(test_vec)
+                    
+                    cool_half_second(ii) = 1;
+                end
+                
+            end
+        first_cool = find(cool_half_second==1,1, 'first');
         
         if ~isempty(first_cool)
            
@@ -50,15 +63,27 @@ for c_roi = 1:length(roi_struct)
             end
             
         end
-        
+        end
     end
     
     late_peak = [];
     for c_trial = (length(train_files)-3):length(train_files)
        
         load(train_files(c_trial).name)
-        
-        first_cool = find(expr.c_trial.bdata.laser_power<-4, 1, 'first');
+        if isfield(expr.c_trial, 'idata')
+            
+            cool_half_second = zeros(1,length(expr.c_trial.bdata.laser_power)-25);
+            for ii = 1:(length(expr.c_trial.bdata.laser_power)-25)
+                test_vec = expr.c_trial.bdata.laser_power(ii:ii+25);
+                num_cool_frames = numel(find(test_vec<expr.settings.light_power));
+                
+                if num_cool_frames == length(test_vec)
+                    
+                    cool_half_second(ii) = 1;
+                end
+                
+            end
+        first_cool = find(cool_half_second==1,1, 'first');
         
         if ~isempty(first_cool)
            
@@ -81,7 +106,7 @@ for c_roi = 1:length(roi_struct)
                 late_peak = [late_peak; max(c_trace)];
 
             end
-            
+        end
         end
         
     end
