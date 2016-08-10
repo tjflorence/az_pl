@@ -89,6 +89,12 @@ elseif expver == 4
     bfiles = dir('env*');
     bsort = bfiles;
     
+elseif expver == 5;
+    
+    bsort = dir('env*');
+    ol_a_files = dir('OL_A*');
+    ol_b_files = dir('OL_B*');
+    
 end
         
 cd(idir);
