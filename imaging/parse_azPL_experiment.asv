@@ -117,7 +117,7 @@ for ii = 1:length(ol_a_files)
    if sync_exist
        try
         cd([idir dash 'sync_' num2str(b_num, '%03d')])
-        pz_pos = h5read('Episode001.h5', '/AI/Piezo Monitor');
+        pz_pos = h5read(['Episode001.h5', dash 'AI/Piezo Monitor']);
         out = pz_pos(sync_sample_num);
         sync_exist = 1;
        catch
@@ -167,7 +167,7 @@ for ii = 1:length(bsort)
    if sync_exist
        try
         cd([idir dash 'sync_' num2str(b_num, '%03d')])
-        pz_pos = h5read('Episode001.h5',  '/AI/Piezo Monitor']);
+        pz_pos = h5read('Episode001.h5', 'AI/Piezo Monitor');
         out = pz_pos(68000);
         sync_exist = 1;
        catch
@@ -181,7 +181,7 @@ for ii = 1:length(bsort)
    
    %% checks for behavior files -- sometime read errors from ball
    % throw off sync
-   load([bdir dash bsort(ii).name])
+   load([bdir '/' bsort(ii).name])
    
    if ~isfield(expr.c_trial, 'bdata')
     expr.c_trial.bdata = expr.c_trial.data;
@@ -207,9 +207,9 @@ for ii = 1:length(bsort)
    
    if sync_exist == 1 && i_exist == 1 && no_berror == 1
        
-           sum_struct.fpaths(b_num).bpath = [bdir dash bsort(ii).name];
-           sum_struct.fpaths(b_num).ipath = [idir dash 'trial_' num2str(b_num, '%03d')];
-           sum_struct.fpaths(b_num).spath = [idir dash 'sync_' num2str(b_num, '%03d')];
+           sum_struct.fpaths(b_num).bpath = [bdir '/' bsort(ii).name];
+           sum_struct.fpaths(b_num).ipath = [idir '/trial_' num2str(b_num, '%03d')];
+           sum_struct.fpaths(b_num).spath = [idir '/sync_' num2str(b_num, '%03d')];
        
    end
     
@@ -220,10 +220,10 @@ for ii = 1:length(ol_b_files)
     b_num = b_num + 1;
     
        %% checks for valid sync files
-   sync_exist = ~isempty(dir([idir dash 'sync_' num2str(b_num, '%03d')]));
+   sync_exist = ~isempty(dir([idir '/sync_' num2str(b_num, '%03d')]));
    if sync_exist
        try
-        cd([idir dash 'sync_' num2str(b_num, '%03d')])
+        cd([idir '/sync_' num2str(b_num, '%03d')])
         pz_pos = h5read('Episode001.h5', '/AI/Piezo Monitor');
         out = pz_pos(69000);
         sync_exist = 1;
@@ -238,7 +238,7 @@ for ii = 1:length(ol_b_files)
    
    %% checks for behavior files -- sometime read errors from ball
    % throw off sync
-   load([bdir dash ol_b_files(ii).name])
+   load([bdir '/' ol_b_files(ii).name])
    
    if ~isfield(expr.c_trial, 'bdata')
     expr.c_trial.bdata = expr.c_trial.data;
@@ -254,9 +254,9 @@ for ii = 1:length(ol_b_files)
    
    if sync_exist == 1 && i_exist == 1 && no_berror == 1
        
-           sum_struct.fpaths(b_num).bpath = [bdir dash ol_b_files(ii).name];
-           sum_struct.fpaths(b_num).ipath = [idir dash 'trial_' num2str(b_num, '%03d')];
-           sum_struct.fpaths(b_num).spath = [idir dash 'sync_' num2str(b_num, '%03d')];
+           sum_struct.fpaths(b_num).bpath = [bdir '/' ol_b_files(ii).name];
+           sum_struct.fpaths(b_num).ipath = [idir '/trial_' num2str(b_num, '%03d')];
+           sum_struct.fpaths(b_num).spath = [idir '/sync_' num2str(b_num, '%03d')];
        
    end
     

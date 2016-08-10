@@ -1,13 +1,18 @@
 function [frame_4d, frame_MIP, img_frame_id, tstamp] = parse_azPL_imgfile_gpu(syncdir, idir, bdir)
 
 ds_factor = 0.33;
+if ispc 
+    dash = '\';
+else
+    dash = '.';
+end
 
 homedir =pwd;
 
 cd(idir);
 xml_h = dir('Experiment.xml');
 
-test_xml = [pwd '/' xml_h.name];
+test_xml = [pwd dash xml_h.name];
 xstruct = xml2struct(test_xml);
 pixX = str2num(xstruct.ThorImageExperiment.LSM.Attributes.pixelX);
 pixY = str2num(xstruct.ThorImageExperiment.LSM.Attributes.pixelY);
@@ -18,11 +23,11 @@ ds_pixX = size(test_ds_plane, 2);
 ds_pixY = size(test_ds_plane, 1);
 
 ifile_h = dir('Image*');
-test_ifile = [pwd '/' ifile_h.name];
+test_ifile = [pwd dash ifile_h.name];
 
 cd(syncdir)
 sync_h = dir('Episode*');
-test_syncfile = [pwd '/' sync_h.name];
+test_syncfile = [pwd dash sync_h.name];
 
 %% read out frame data
 frame_out = h5read(test_syncfile, '/DI/Frame Out');
@@ -55,7 +60,7 @@ plot(clk_vec)
 pz_pos = h5read(test_syncfile, '/AI/Piezo Monitor');
 
 %% plot piezo and frame acq
-if exist([bdir '/' 'stack_data.mat'], 'file') == 0
+if exist([bdir dash 'stack_data.mat'], 'file') == 0
 
     f1 = figure('Position', [ 65   541   790   414]);
     plot(pz_pos(1:10000));
@@ -73,12 +78,12 @@ if exist([bdir '/' 'stack_data.mat'], 'file') == 0
     disp(['trash frames = ' num2str(trash_frames)]);
     disp(['stack frames = ' num2str(stack_frames)]);
     disp(['flyback frames = ' num2str(flyback_frames)]);
-    save([bdir '/stack_data.mat'], 'trash_frames', 'stack_frames', 'flyback_frames')
+    save([bdir dash 'stack_data.mat'], 'trash_frames', 'stack_frames', 'flyback_frames')
     disp('continuing...')
 
 else
 
-    load([bdir '/' 'stack_data.mat'])
+    load([bdir dash 'stack_data.mat'])
     
 end
 

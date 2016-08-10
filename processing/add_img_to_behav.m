@@ -1,6 +1,6 @@
 function add_img_to_behav(bdir, bfile, idir, syncdir)
 
-[frame_4d, frame_MIP, img_frame_id, tstamp] = parse_azPL_imgfile(syncdir, idir, bdir);
+[frame_4d, frame_MIP, img_frame_id, tstamp] = parse_azPL_imgfile_gpu(syncdir, idir, bdir);
 
 load(bfile);
 
