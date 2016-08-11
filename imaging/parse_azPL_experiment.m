@@ -167,7 +167,7 @@ for ii = 1:length(bsort)
    if sync_exist
        try
         cd([idir dash 'sync_' num2str(b_num, '%03d')])
-        pz_pos = h5read('Episode001.h5',  '/AI/Piezo Monitor']);
+        pz_pos = h5read('Episode001.h5',  '/AI/Piezo Monitor');
         out = pz_pos(68000);
         sync_exist = 1;
        catch
