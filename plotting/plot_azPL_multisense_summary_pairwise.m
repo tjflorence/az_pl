@@ -1,4 +1,4 @@
-function plot_azPL_multisense_summary_group(expdir)
+function plot_azPL_multisense_summary_pairwise(expdir)
 
 
 cd(expdir)
@@ -7,7 +7,7 @@ load('multisense_summary_data.mat')
 pairs(1).name = 'refVIZ_dark';
 pairs(1).idx = [1 2];
 
-pairs(2).name = 'refVIZ_light'
+pairs(2).name = 'refVIZ_light';
 pairs(2).idx = [3 4];
 
 pairs(3).name = 'refVIZ_static';
@@ -28,10 +28,10 @@ pairs(7).idx = [12 17];
 pairs(8).name = 'testVIZ_static';
 pairs(8).idx = [13 18];
 
-pairs(9).name = 'testVIZ_dark';
+pairs(9).name = 'testVIZ_OL';
 pairs(9).idx = [14 19];
 
-pairs(10).name = 'testVIZ_dark';
+pairs(10).name = 'testVIZ_CL';
 pairs(10).idx = [15 20];
 
 
@@ -40,8 +40,8 @@ roi_struct = roi_auto_struct;
 
 close all
 
-cMap = [0 0 0;...
-         1 0 0];
+cMap = [241 163 64;...
+         153, 142, 195]./255;
 
 for pair_num = 1:length(pairs);
     for c_roi = 1:length(roi_struct);
@@ -67,8 +67,10 @@ for pair_num = 1:length(pairs);
     split_text = strsplit(pair_name, '_');
     condition_type = split_text{2};
     
-    text(70, 6, condition_type, 'FontSize', 15, 'color', 'k')
-    
+    text(70, 6, ['visual condition: ' condition_type] , 'FontSize', 20, 'color', 'k')
+    text(70, 16, 'no heat', 'FontSize', 20, 'color', cMap(1,:))
+    text(70, 26, 'heat', 'FontSize', 20, 'color', cMap(2,:))
+ 
     % subplot 2: traces
     s2 = subplot(3,1,2); 
  
@@ -80,8 +82,8 @@ for pair_num = 1:length(pairs);
         mean_y_val = summary_stim(c_idx).rois(c_roi).mean_dF;
         
         mean_y_val = mean_y_val-mean(mean_y_val(10:100));
-        sem_y_val = std(summary_stim(c_idx).rois(c_roi).dFs, [], 2) /sqrt(size(summary_stim(c_idx).rois(c_roi).dFs, 2));
-        
+        sem_y_val = std(summary_stim(c_idx).rois(c_roi).dFs);%; /sqrt(size(summary_stim(c_idx).rois(c_roi).dFs, 2));
+               
         hold on
         confplot(x_vals, mean_y_val, sem_y_val, sem_y_val, cMap(ii,:))
                 
