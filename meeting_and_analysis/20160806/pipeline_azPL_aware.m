@@ -1,8 +1,8 @@
 clear all
 
-bdir = '\\reiser_nas\tj\az_pl\behavior\2016-08-10\20160810151431_tdc-2_OL_stim';
-idir = '\\reiser_nas\tj\az_pl\imaging\20160810\fly1a_tdc2_OL';
-syncdir = '\\reiser_nas\tj\az_pl\imaging\20160810\fly1a_tdc2_OL';
+bdir = '\\reiser_nas\tj\az_pl\behavior\2016-08-08\20160808211216_11f03_az_PL-coincidence';
+idir = '\\reiser_nas\tj\az_pl\imaging\20160808\fly2_11f03_CL';
+syncdir = '\\reiser_nas\tj\az_pl\imaging\20160808\fly2_11f03_CL';
 
 local_processing_dir = 'D:\temp\';
 processed_data_server = '\\reiser_nas\tj\az_pl\processed\';
@@ -43,7 +43,7 @@ toc
 ref_img = [];
 
 %process_azPL_experiment(bdir)
-parse_azPL_experiment(new_bdir, new_idir, 4, 130)
+parse_azPL_experiment(new_bdir, new_idir, 5, 65)
 cd(new_bdir)
 
 try

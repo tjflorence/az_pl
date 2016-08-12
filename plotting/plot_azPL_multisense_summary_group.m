@@ -113,7 +113,8 @@ for collection_num = 1:length(plot_collections);
     text(-10, .9, 'heat', 'fontsize', 25, 'color', 'r')
     text(-10, .6, 'visual', 'fontsize', 25, 'color', 'k')
     
-    set(gca, 'XTick', [], 'YTick', []);
+    set(gca, 'XTick', [10 20 30 40], 'YTick', [], 'Fontsize', 20);
+    xlabel('time (sec)')
     xlim([0 50])
     
     s1_p = get(s1, 'Position');

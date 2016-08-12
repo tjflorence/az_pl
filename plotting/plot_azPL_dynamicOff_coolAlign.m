@@ -1,5 +1,8 @@
 function plot_azPL_dynamicOff_coolAlign(expdir, is_auto)
 
+whitebg('w')
+close all
+
 dynamicOff = dir('*type_5*');
 vizCL      = dir('*type_3*');
 
