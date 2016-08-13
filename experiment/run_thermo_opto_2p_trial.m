@@ -39,8 +39,6 @@ expr.c_trial.data.end_trial = 0;
 disp('beginning trial')
 
 appr.ao.outputSingleScan([5 5 0 -4.99 1 1 1])
-%appr.ao.outputSingleScan([5 5 0 0 1 1 1])
-pause(expr.c_trial.dither);
 
 fwrite(s,[255,0]); % starts tracking acquisition
 
@@ -136,12 +134,40 @@ Vfwd    =    sum(x0)*.7071; %integration rotation for the entire 1/20th of a sec
 Vss     =    sum(y0)*.7071;
 Omega   =    sum(x1)/2;
 
-%fprintf(dataFile,'%d, %d, %d\n',[Vfwd,Vss,Omega]);
 
 expr.c_trial.data.count=expr.c_trial.data.count+1;
 expr.c_trial.data.vfwd(expr.c_trial.data.count)   = Vfwd;
 expr.c_trial.data.vss(expr.c_trial.data.count)    = Vss;
 expr.c_trial.data.om(expr.c_trial.data.count)  = Omega;
+
+%% controls visual stimulus
+if expr.c_trial.data.count == 1
+   
+    if expr.c_trial.viz_type == 1
+        Panel_tcp_com('all_off')
+    elseif expr.c_trial.viz_type == 2
+        Panel_tcp_com('all_on')   
+    elseif expr.c_trial.viz_type == 3
+        Panel_tcp_com('set_pattern_id', 1)
+        Panel_tcp_com('send_gain_bias', [expr.c_trial.c_gain_pat 0 0 0])
+        Panel_tcp_com('stop')
+    end    
+    
+end
+
+
+
+if expr.c_trial.stimulus_vec(expr.c_trial.data.count) == 1
+   
+    if expr.c_trial.viz_type == 1
+        Panel_tcp_com('all_on')
+    elseif expr.c_trial.viz_type == 2
+        Panel_tcp_com('all_off')   
+    elseif expr.c_trial.viz_type == 3
+        Panel_tcp_com('start')
+    end    
+    
+end
 
 
 cpower = expr.c_trial.light_vec(expr.c_trial.data.count);
@@ -155,7 +181,6 @@ end
 
 expr.c_trial.data.laser_power(expr.c_trial.data.count) = cpower;
 expr.c_trial.data.clk_csig(expr.c_trial.data.count) = clk_out;
-expr.c_trial.data.video_frames(:,:,expr.c_trial.data.count) = imresize(getsnapshot(vi_obj), .5);
 
 appr.ao.outputSingleScan([5 5 clk_out cpower 0 1 1])
 

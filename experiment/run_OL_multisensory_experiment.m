@@ -7,9 +7,8 @@ daqreset
 %% experiment level settings
 %  names
 expi.settings.name       = 'OL_stim';
-expi.settings.geno       = '11f03-uniblocks';
-expi.settings.notes      = '';
-expi.settings.img_name   = 'fly 1';
+expi.settings.geno       = 'tdc-2';
+expi.settings.notes      = ''; 
 expi.settings.age        = 4;
 expi.settings.date       = datestr(now, 'yyyymmddHHMMSS');
 expi.settings.fname      = [expi.settings.date '_' expi.settings.geno '_' ...
@@ -39,9 +38,9 @@ expi = generate_multisensory_stimulus_struct(expi) ;
 
 % randomize order 
 exp_order = [];
-for ii = 1:num_reps
+for ii = 1:expi.settings.num_reps
 
-    exp_order = [exp_order randperm(length(stim_struct))];
+    exp_order = [exp_order randperm(length(expi.settings.stim_struct))];
     
 end
 expi.settings.exp_order = exp_order;
@@ -126,7 +125,7 @@ for aa = 1:length(expi.settings.exp_order)
         expi.c_trial.stim_id        = c_stim_num;
         expi.c_trial.viz_name       = c_stim_struct.viz_name;
         expi.c_trial.rep_num        = aa;
-        expi.c_trial.d_viz          = [diff(expr.c_trial.viz_vec) 0];
+        expi.c_trial.d_viz          = [diff(expi.c_trial.viz_vec) 0];
         expi.c_trial.viz_pos_vec    = c_stim_struct.viz_pos_vec;
         
     disp(['rep ' (num2str(aa)) ' REF: '  expi.c_trial.ref_name ...
@@ -140,8 +139,9 @@ for aa = 1:length(expi.settings.exp_order)
     disp([  expi.c_trial.name ])                               
 
     %% run exp trial
+    Panel_tcp_com('set_pattern_id', 2)
     Panel_tcp_com('all_off')
-    expi = run_OL_multisensory_trial(expi, app, vi_m);
+    expi = run_OL_multisensory_trial(expi, app);
 
 	Panel_tcp_com('all_off')
     app.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])

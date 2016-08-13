@@ -1,4 +1,4 @@
-function expi = run_OL_multisensory_trial(expi, app)
+function expi = run_corridor_chr_trial(expi, app)
 
 global expr
 global appr
@@ -6,7 +6,6 @@ global timer1
 global binvals
 global init
 
-%vi_obj = vi;
 expr = expi;
 appr = app;
 %% bin vals
@@ -33,17 +32,18 @@ if s.bytesavailable>0
 end
 
 expr.c_trial.data.end_trial = 0;
-expr.c_trial.first_vr = 1;
 
 %starts logging
 disp('beginning trial')
+
 appr.ao.outputSingleScan([5 5 0 -4.99 1 1 1])
 
 fwrite(s,[255,0]); % starts tracking acquisition
 
-timer1 = tic();
+timer1      =   tic;
 while (toc(timer1) < expr.c_trial.trial_time)...
-
+        && (expr.c_trial.data.safe_frames < expr.c_trial.reward_frames) ...
+        && expr.c_trial.data.end_trial == 0
  
     pause(.001) % waits for experiment to finish
 end
@@ -60,12 +60,12 @@ fclose('all');
 delete(s);
 
 % turn off arena
-appr.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
-
+appr.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0]);
+fwrite(appr.tcpipServer, [1 0 0 0 1], 'double');
 
 expi = expr;
 cd(expi.settings.fullpath)
-save(expi.c_trial.name, 'expr', '-v7.3');
+save(expi.c_trial.name, 'expr');
 
 end
 
@@ -75,6 +75,8 @@ end
 global expr
 global appr
 global timer1
+global binvals
+global init
 
 %% gets data from ball tracker
 %Sometimes this event gets called with no data available... for whatever reason, if so, return
@@ -131,12 +133,69 @@ Vfwd    =    sum(x0)*.7071; %integration rotation for the entire 1/20th of a sec
 Vss     =    sum(y0)*.7071;
 Omega   =    sum(x1)/2;
 
-expr.c_trial.data.count=expr.c_trial.data.count   +1;
+%fprintf(dataFile,'%d, %d, %d\n',[Vfwd,Vss,Omega]);
+
+expr.c_trial.data.count=expr.c_trial.data.count+1;
 expr.c_trial.data.vfwd(expr.c_trial.data.count)   = Vfwd;
 expr.c_trial.data.vss(expr.c_trial.data.count)    = Vss;
 expr.c_trial.data.om(expr.c_trial.data.count)  = Omega;
 
-update_view(Omega);
+if  expr.c_trial.data.count < expr.c_trial.dark_frames;
+    
+    expr.c_trial.data.xpos(expr.c_trial.data.count) =   expr.c_trial.startXYT(1);
+    expr.c_trial.data.ypos(expr.c_trial.data.count) =   expr.c_trial.startXYT(2);
+    expr.c_trial.data.th(expr.c_trial.data.count)   =   expr.c_trial.startXYT(3);
+    
+    if expr.c_trial.data.count > expr.c_trial.dark_frames
+       expr.c_trial.data.state = expr.c_trial.data.state+1;
+       expr.c_trial.data.state_1_2_trans = expr.c_trial.data.count;
+    end
+    
+    expr.c_trial.player.xu = expr.c_trial.data.xpos(expr.c_trial.data.count);
+    expr.c_trial.player.yu = expr.c_trial.data.ypos(expr.c_trial.data.count);
+    expr.c_trial.player.th = expr.c_trial.data.th(expr.c_trial.data.count);
+    
+   patternCode = [1];
+
+   laser_power = -4.99;
+    
+else %% now, fly has full closed-loop control
+    
+    expr.c_trial.data.th(expr.c_trial.data.count)   =  mod(expr.c_trial.data.th(expr.c_trial.data.count-1)+ ...
+                                                        ((Omega/expr.settings.ticks_per_deg)*expr.settings.rot_gain),360);
+    
+    expr.c_trial.data.xpos(expr.c_trial.data.count) = floor(expr.c_trial.data.xpos(expr.c_trial.data.count-1)+...
+                                                        (Vfwd*expr.settings.fwd_gain*...
+                                                        cosd(expr.c_trial.data.th(expr.c_trial.data.count))) );
+    
+    % set the min and max of travel
+    if expr.c_trial.data.xpos(expr.c_trial.data.count) > expr.settings.max_x
+        expr.c_trial.data.xpos(expr.c_trial.data.count) = expr.settings.max_x;
+    elseif expr.c_trial.data.xpos(expr.c_trial.data.count) < expr.c_trial.startXYT(1)
+        expr.c_trial.data.xpos(expr.c_trial.data.count) = expr.c_trial.startXYT(1);
+    end
+    
+    % if fly hits end, end the trial
+    if expr.c_trial.data.xpos(expr.c_trial.data.count) == expr.settings.startXYT(1,1) || ...
+            expr.c_trial.data.xpos(expr.c_trial.data.count) == expr.settings.max_x
+        if expr.c_trial.data.count > expr.c_trial.data.state_2_3_trans+(1500)
+            expr.c_trial.data.end_trial = 1;
+        end
+    end
+    
+    expr.c_trial.data.ypos(expr.c_trial.data.count) = expr.c_trial.startXYT(2);
+    expr.c_trial.player.xu = expr.c_trial.data.xpos(expr.c_trial.data.count);
+    expr.c_trial.player.yu = expr.c_trial.data.ypos(expr.c_trial.data.count);
+    expr.c_trial.player.th = expr.c_trial.data.th(expr.c_trial.data.count);
+    
+    laser_power = expr.c_trial.thermal_env(round(expr.c_trial.player.xu));
+    
+    patternCode = [3];    
+    
+end
+
+
+output_vec = [laser_power 1];
 
 tframe = mod(expr.c_trial.data.count, 2);
 
@@ -146,94 +205,19 @@ else
     clk_out = 5;
 end
 
-cpower =  expr.c_trial.therm_vec(expr.c_trial.data.count);
-expr.c_trial.data.laser_power(expr.c_trial.data.count) = cpower;
+expr.c_trial.data.laser_power(expr.c_trial.data.count) = laser_power;
 expr.c_trial.data.clk_csig(expr.c_trial.data.count) = clk_out;
-appr.ao.outputSingleScan([5 5 clk_out cpower 0 1 1])
+
+appr.ao.outputSingleScan([5 5 clk_out output_vec 1 1])
+fwrite(appr.tcpipServer, [1 expr.c_trial.player.xu expr.c_trial.player.yu ...
+            expr.c_trial.player.th patternCode], 'double')
+
 
 %% checks frame rate
 expr.c_trial.data.timestamp(expr.c_trial.data.count)=toc(timer1);
 
- end       
+end       
 
- function update_view(Omega)
- 
- global expr
- 
-%% first, integrate rotation
-    if expr.c_trial.data.count == 1
-    
-        expr.c_trial.data.th(expr.c_trial.data.count) = expr.c_trial.initial_th;
-        expr.c_trial.data.xpos(expr.c_trial.data.count) = round(expr.c_trial.data.th(expr.c_trial.data.count)/360*96);
-        
-        if expr.c_trial.data.xpos(expr.c_trial.data.count) == 0;
-            expr.c_trial.data.xpos(expr.c_trial.data.count) = 1;
-        elseif expr.c_trial.data.xpos(expr.c_trial.data.count) == 97;
-            expr.c_trial.data.xpos(expr.c_trial.data.count) = 96;
-        end
-               
-    else
-    
 
-        expr.c_trial.data.th(expr.c_trial.data.count)   =  mod(expr.c_trial.data.th(expr.c_trial.data.count-1)+ ...
-                                                        ((-Omega/expr.settings.ticks_per_deg)*expr.settings.rot_gain),360);
-    
-        expr.c_trial.data.xpos(expr.c_trial.data.count) = round(expr.c_trial.data.th(expr.c_trial.data.count)/360*96);
-        
-        if expr.c_trial.data.xpos(expr.c_trial.data.count) == 0;
-            expr.c_trial.data.xpos(expr.c_trial.data.count) = 1;
-        elseif expr.c_trial.data.xpos(expr.c_trial.data.count) == 97;
-            expr.c_trial.data.xpos(expr.c_trial.data.count) = 96;
-        end
-               
-
-    end
-
-%% second, update view based on visual conditions
-    switch expr.c_trial.viz_name    
-        case 'dark'
-            Panel_tcp_com('all_off')
-        
-        case 'light'
-            
-            if expr.c_trial.viz_vec(expr.c_trial.data.count) == 0
-                Panel_tcp_com('all_off')
-            else
-                Panel_tcp_com('all_on')
-            end
-            
-        case 'env(stat)'
-            
-            if expr.c_trial.viz_vec(expr.c_trial.data.count) == 0
-                Panel_tcp_com('all_off')
-            else   
-                Panel_tcp_com('set_position', [48 1])
-            end
-            
-        case 'env(OL)'
-            
-            if expr.c_trial.viz_vec(expr.c_trial.data.count) == 0
-                Panel_tcp_com('all_off')
-            else 
-                c_xpos = expr.c_trial.viz_pos_vec(expr.c_trial.data.count);
-                Panel_tcp_com('set_position', [c_xpos 1])
-                
-            end
-            
-            
-        case 'env(CL)'
-            
-             if expr.c_trial.viz_vec(expr.c_trial.data.count) == 0
-                
-                 Panel_tcp_com('all_off')
-                
-             else
-                
-                c_xpos = expr.c_trial.data.xpos(expr.c_trial.data.count);
-                Panel_tcp_com('set_position', [c_xpos 1])
-                
-            end           
-    end
- end
 
        

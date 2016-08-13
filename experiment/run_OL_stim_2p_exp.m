@@ -19,35 +19,74 @@ expi.settings.savedir    = 'C:\hot-dir\';
 expi.settings.rot_gain       = .4;
 expi.settings.fwd_gain       = 1;
 expi.settings.hz             = 50; 
-expi.settings.num_reps       = 3;
+expi.settings.num_reps       = 100;
+expi.settings.start_theta    = [90 270];
+expi.settings.start_xpos     = [24 72];
 
 expi.settings.light_power    = [1];
-expi.settings.prestim_time   = 10;
-expi.settings.poststim_time  = 10;
-expi.settings.ref_stim_time  = 30;
-expi.settings.test_stim_time = 15;
+expi.settings.startXYT       = [96 96 0];
+expi.settings.dark_time      = 0; 
+expi.settings.fix_time       = 0;
+expi.settings.prestim_time   = 60;
+expi.settings.poststim_time  = 70;
 expi.settings.align_time     = 0;
 expi.settings.trial_time     = expi.settings.prestim_time+expi.settings.poststim_time;
 
-expi.settings.prefix(1).text = 'OL_stim';
+e_samples = expi.settings.prestim_time*expi.settings.hz;
+expi.settings.stim(1).heat_vec = -4.99*ones(1, 1.1*expi.settings.trial_time*expi.settings.hz);
+expi.settings.stim(1).name = 'all_off';
+
+expi.settings.stim(2).heat_vec = -4.99*ones(1, 1.1*expi.settings.trial_time*expi.settings.hz);
+expi.settings.stim(2).heat_vec(1, e_samples:(e_samples+25)) = expi.settings.light_power;
+expi.settings.stim(2).name = '05_sec_pulse';
+
+expi.settings.stim(3).heat_vec = -4.99*ones(1, 1.1*expi.settings.trial_time*expi.settings.hz);
+expi.settings.stim(3).heat_vec(1, e_samples:(e_samples+50)) = expi.settings.light_power;
+expi.settings.stim(3).name = '1_sec_pulse';
+
+expi.settings.stim(4).heat_vec = -4.99*ones(1, 1.1*expi.settings.trial_time*expi.settings.hz);
+expi.settings.stim(4).heat_vec(1, e_samples:(e_samples+250)) = expi.settings.light_power;
+expi.settings.stim(4).name = '5_sec_pulse';
+
+expi.settings.stim(5).heat_vec = -4.99*ones(1, 1.1*expi.settings.trial_time*expi.settings.hz);
+expi.settings.stim(5).heat_vec(1, e_samples:(e_samples+750)) = expi.settings.light_power;
+expi.settings.stim(5).name = '15_sec_pulse';
+
+expi.settings.stim(6).heat_vec = -4.99*ones(1, 1.1*expi.settings.trial_time*expi.settings.hz);
+expi.settings.stim(6).heat_vec(1, e_samples:(e_samples+1500)) = expi.settings.light_power;
+expi.settings.stim(6).name = '30_sec_pulse';
+
+expi.settings.num_stim_types = length(expi.settings.stim);
+expi.settings.num_stim_reps = 4;
+expi.settings.stim_vec = [];
+for ii = 1:expi.settings.num_stim_reps
+   
+    expi.settings.stim_vec = [expi.settings.stim_vec randperm(expi.settings.num_stim_types)];
+    
+end
+
+expi.settings.viz_condition = nan(size(expi.settings.stim_vec));
+for ii = 1:expi.settings.num_stim_types
+   
+    presentation_locations = find(expi.settings.stim_vec==ii);
+    stim_rand = [ones(1,2) zeros(1,2)];
+    stim_rand = stim_rand(randperm(length(stim_rand)));
+    
+    for jj = 1:length(presentation_locations)
+       
+        c_location = presentation_locations(jj);
+        expi.settings.viz_condition(c_location) = stim_rand(jj);
+        
+    end
+    
+end
+
+expi.settings.prefix(1).text = 'env_align';
+expi.settings.prefix(2).text = 'env_train';
 expi.settings.ball_diameter = 9;
 expi.settings.ticks_per_mm = 3.5;
 expi.settings.ticks_per_deg = (expi.settings.ball_diameter)*pi*expi.settings.ticks_per_mm/360;
 expi.camera.do_capture = 0;
-
-%% generate stimulus control
-expi = generate_multisensory_stimulus_struct(expi) ;
-
-% randomize order 
-exp_order = [];
-for ii = 1:num_reps
-
-    exp_order = [exp_order randperm(length(stim_struct))];
-    
-end
-expi.settings.exp_order = exp_order;
-
-% 
 
 vi_m = videoinput('pointgrey', 1);
 vi_l = videoinput('pointgrey', 2);
@@ -101,40 +140,63 @@ aligned_trial = 0;
 disp('paused - hit space to continue')
 pause
 
+
 %% start acquisition
 app.ao.outputSingleScan([-4.99 0 0 -4.99 0 0 0])
 
+blank_datavec = nan(1, (expi.settings.trial_time*expi.settings.hz)+100);
+blank_datamat = blank_datavec;
+
 %% now run trials
 f1 = figure('color', 'w', 'position', [27 607 727 380]);
-for aa = 1:length(expi.settings.exp_order)
+for aa = 1:length(expi.settings.stim_vec)
 
-    c_stim_num = expi.settings.exp_order(aa);
-    c_stim_struct = expi.settings.stim_struct(c_stim_num);
+   c_viz = expi.settings.viz_condition(aa);
+   c_stim = expi.settings.stim_vec(aa);
+   light_vec = expi.settings.stim(c_stim).heat_vec;
+   c_rand = randperm(2);
+   c_rand = c_rand(1);
    
-    %% BRIEF
-    disp('*************************************')
+   %% BRIEF
+   disp('*************************************')
+   disp('running brief pulse')
    
-    disp(['rep ' num2str(aa) ' of '  num2str(length(expi.settings.exp_order))])
+   disp(['rep ' num2str(aa) ' of ' num2str(length(expi.settings.stim_vec))])
+   expi = init_memory(expi);
+
+    expi.c_trial.startXYT    = expi.settings.startXYT(1,:);
+    expi.c_trial.dark_time   = expi.settings.dark_time;
+    expi.c_trial.fix_time    = expi.settings.fix_time;
+    expi.c_trial.trial_time  = expi.settings.trial_time;
+    expi.c_trial.dark_frames = expi.c_trial.dark_time*expi.settings.hz;
+    expi.c_trial.fix_frames  = expi.c_trial.fix_time*expi.settings.hz;
+    expi.c_trial.prestim_frames = expi.settings.prestim_time*expi.settings.hz;
     
-    expi = init_memory(expi);
-        expi.c_trial.trial_time     = expi.settings.trial_time;
-        expi.c_trial.therm_vec      = c_stim_struct.therm_vec;
-        expi.c_trial.viz_vec        = c_stim_struct.viz_vec;
-        expi.c_trial.ref_name       = c_stim_struct.ref_name;
-        expi.c_trial.test_name      = c_stim_struct.test_name;
-        expi.c_trial.stim           = c_stim_struct;
-        expi.c_trial.stim_id        = c_stim_num;
-        expi.c_trial.rep_num        = aa;
+    expi.c_trial.player.xu   = expi.c_trial.startXYT(1);
+    expi.c_trial.player.yu   = expi.c_trial.startXYT(2);
+    expi.c_trial.player.th   = expi.c_trial.startXYT(3);
     
-    disp(['rep ' (num2str(aa)) ' REF: '  expi.c_trial.ref_name ...
-            ' TEST: ' expi.c_trial.test_name ]);
+    expi.c_trial.light_vec = light_vec;
+    expi.c_trial.light_name = expi.settings.stim(c_stim).name;
+    expi.c_trial.viz_type = c_viz;
+    
+    expi.c_trial.player.start_th    = expi.settings.start_theta(c_rand);
+    expi.c_trial.player.start_xpos  = expi.settings.start_xpos(c_rand);
+    
+    if c_viz == 0
+        expi.c_trial.viz_name = 'vizOFF';
+    else
+        expi.c_trial.viz_name = 'vizCL';
+    end
+
+    disp([' rep ' (num2str(aa)) ' type '  expi.c_trial.light_name ])
 
     expi.c_trial.name = ['env_rep_' num2str(aa, '%03d')...
-                            '_type_' num2str(c_stim_num, '%03d')...
-                            '_REF_' expi.c_trial.ref_name ...
-                            '_TEST_' expi.c_trial.test_name];
-                        
-    disp([  expi.c_trial.name ])                               
+                            '_type_' num2str(c_stim, '%03d')...
+                            '_stim_' expi.c_trial.light_name ...
+                            '_' expi.c_trial.viz_name];
+     disp([  expi.c_trial.name ])                               
+    expi.c_trial.rep_num         = aa;
 
     %% run exp trial
     Panel_tcp_com('all_off')
