@@ -94,23 +94,19 @@ pause
 
 %% start acquisition
 app.ao.outputSingleScan([-4.99 0 0 -4.99 0 0 0])
-<<<<<<< HEAD
 for aa = 1
-=======
-%for aa = 1:3
->>>>>>> 484c407303fdee430a89e57180ea127afcc198a8
-   
- %  c_power = expi.settings.light_power(randperm(length(expi.settings.light_power)));
- %  c_power = c_power(1);
-          
- %  power_vec = -4.99*ones(1,96);
-        
- %  try
- %       expi = rmfield(expi, 'c_trial');
- %   catch
- %  end
 
-<<<<<<< HEAD
+  c_power = expi.settings.light_power(randperm(length(expi.settings.light_power)));
+  c_power = c_power(1);
+          
+  power_vec = -4.99*ones(1,96);
+        
+  try
+       expi = rmfield(expi, 'c_trial');
+   catch
+  end
+
+
     %% BRIEF
     disp('*************************************')
     disp('running pretest OL mapping')
@@ -128,77 +124,40 @@ for aa = 1
     expi.c_trial.reward_frames  = nan;
     
     expi.c_trial.pos_vec = make_OL_map_posvec(expi.settings.hz);
-=======
-   %% BRIEF
- %  disp('*************************************')
- %  disp('running brief pulse')
-   
- %   disp(['rep ' num2str(aa) ' of ' num2str(expi.settings.num_trials)])
- %   expi = init_memory(expi);
+    
+   c_rand = randperm(2);
+   c_rand = c_rand(1);
+   expi.c_trial.player.start_th    = expi.settings.start_theta(c_rand);
+   expi.c_trial.player.start_xpos  = expi.settings.start_xpos(c_rand);
 
- %   expi.c_trial.rep     =    aa;
- %   expi.c_trial.dark_time   = 8.56;
- %   expi.c_trial.fix_time    = nan;
- %   expi.c_trial.trial_time  = 70;
- %   expi.c_trial.reward_time = nan;
- %   expi.c_trial.dark_frames = 428;
- %   expi.c_trial.fix_frames  = nan;
- %   expi.c_trial.reward_frames  = nan;
-    
- %   expi.c_trial.pos_vec = [];
- %   pos_idx = 3:3:96;
- %   for jj = pos_idx(randperm(numel(pos_idx)))
-       
- %       expi.c_trial.pos_vec = [expi.c_trial.pos_vec jj*ones(1, 48)];
-        
- %   end
-    
- %   if aa == 1
- %       expi.c_trial.pos_vec = [expi.c_trial.pos_vec fliplr(expi.c_trial.pos_vec) ];
- %   else
- %       expi.c_trial.pos_vec = [fliplr(expi.c_trial.pos_vec) expi.c_trial.pos_vec ];
- %   end
-    
- %   expi.c_trial.pos_vec = [zeros(1, expi.c_trial.dark_frames) expi.c_trial.pos_vec  1 1 1 1 1];
->>>>>>> 484c407303fdee430a89e57180ea127afcc198a8
-    
- %   c_rand = randperm(2);
- %   c_rand = c_rand(1);
- %   expi.c_trial.player.start_th    = expi.settings.start_theta(c_rand);
- %   expi.c_trial.player.start_xpos  = expi.settings.start_xpos(c_rand);
+   expi.c_trial.light_vec = power_vec;
 
- %   expi.c_trial.light_vec = power_vec;
-
- %   disp(['trial  ' (num2str(aa))])
+   disp(['trial  ' (num2str(aa))])
    
     %% this is where we put the pattern setting code     
-<<<<<<< HEAD
     expi.c_trial.name = ['OL_A_' num2str(aa)]; 
     expi.c_trial.rep_num         = aa;
     expi.c_trial.light_power     = c_power;
-=======
- %  expi.c_trial.name = ['OL_A_' num2str(aa)];
 
    
- %   expi.c_trial.rep_num         = aa;
- %   expi.c_trial.light_power     = c_power;
->>>>>>> 484c407303fdee430a89e57180ea127afcc198a8
+   expi.c_trial.rep_num         = aa;
+   expi.c_trial.light_power     = c_power;
     
     %% run exp trial
- %   expi = run_az_PL_OL_trial(expi, app);
+   expi = run_az_PL_OL_trial(expi, app);
 
- %   Panel_tcp_com('all_off')
- %   pause(3)
- %  app.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
+   Panel_tcp_com('all_off')
+   pause(3)
+  app.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
 
- %   if expi.settings.is_imaging == 1
- %       disp('hit space to continue')
- %       pause()
- %   else
- %       pause(10)
- %   end
+   if expi.settings.is_imaging == 1
+       disp('hit space to continue')
+       pause()
+   else
+       pause(10)
+   end
     
-%end
+end
 
 %% now run trials
 f1 = figure('color', 'w', 'position', [27 607 727 380]);
@@ -419,26 +378,22 @@ end
 %%%%%%%%%%
 %%%%%%%%%
 % here is the open loop mapping
-<<<<<<< HEAD
 for aa = 1
-=======
-%for aa = 1:3
->>>>>>> 484c407303fdee430a89e57180ea127afcc198a8
-   
-%   c_power = expi.settings.light_power(randperm(length(expi.settings.light_power)));
-%   c_power = c_power(1);
-          
-%   power_vec = -4.99*ones(1,96);
-        
-%   try
-%        expi = rmfield(expi, 'c_trial');
-%    catch
-%   end
 
-   %% BRIEF
-<<<<<<< HEAD
-   disp('*************************************')
-   disp('running post test OL mapping ')
+  c_power = expi.settings.light_power(randperm(length(expi.settings.light_power)));
+  c_power = c_power(1);
+          
+  power_vec = -4.99*ones(1,96);
+        
+  try
+       expi = rmfield(expi, 'c_trial');
+   catch
+  end
+
+
+    %% BRIEF
+    disp('*************************************')
+    disp('running posttest OL mapping')
    
     disp(['rep ' num2str(aa) ' of ' num2str(expi.settings.num_trials)])
     expi = init_memory(expi);
@@ -453,74 +408,40 @@ for aa = 1
     expi.c_trial.reward_frames  = nan;
     
     expi.c_trial.pos_vec = make_OL_map_posvec(expi.settings.hz);
+    
+   c_rand = randperm(2);
+   c_rand = c_rand(1);
+   expi.c_trial.player.start_th    = expi.settings.start_theta(c_rand);
+   expi.c_trial.player.start_xpos  = expi.settings.start_xpos(c_rand);
 
-    c_rand = randperm(2);
-    c_rand = c_rand(1);
-    expi.c_trial.player.start_th    = expi.settings.start_theta(c_rand);
-    expi.c_trial.player.start_xpos  = expi.settings.start_xpos(c_rand);
-=======
-%   disp('*************************************')
-%   disp('running OL mapping ')
+   expi.c_trial.light_vec = power_vec;
+
+   disp(['trial  ' (num2str(aa))])
    
-%    disp(['rep ' num2str(aa) ' of ' num2str(expi.settings.num_trials)])
-%    expi = init_memory(expi);
+    %% this is where we put the pattern setting code     
+    expi.c_trial.rep_num         = aa;
+    expi.c_trial.light_power     = c_power;
+    expi.c_trial.name = ['OL_B_' num2str(aa)];
 
-%    expi.c_trial.rep     =    aa;
-%    expi.c_trial.dark_time   = 8.56;
-%    expi.c_trial.fix_time    = nan;
-%    expi.c_trial.trial_time  = 70;
-%    expi.c_trial.reward_time = nan;
-%    expi.c_trial.dark_frames = 428;
-%    expi.c_trial.fix_frames  = nan;
-%    expi.c_trial.reward_frames  = nan;
-    
-%    expi.c_trial.pos_vec = [];
-%    pos_idx = 3:3:96;
-%    for jj = pos_idx(randperm(numel(pos_idx)))
-       
- %       expi.c_trial.pos_vec = [expi.c_trial.pos_vec jj*ones(1, 48)];
-        
- %   end
-    
- %   if aa == 1
- %       expi.c_trial.pos_vec = [expi.c_trial.pos_vec fliplr(expi.c_trial.pos_vec)];
- %   else
- %       expi.c_trial.pos_vec = [fliplr(expi.c_trial.pos_vec) expi.c_trial.pos_vec];
- %   end
-    
- %   expi.c_trial.pos_vec = [zeros(1, expi.c_trial.dark_frames) expi.c_trial.pos_vec  1 1 1 1 1];
-    
- %   c_rand = randperm(2);
- %   c_rand = c_rand(1);
- %   expi.c_trial.player.start_th    = expi.settings.start_theta(c_rand);
-%    expi.c_trial.player.start_xpos  = expi.settings.start_xpos(c_rand);
->>>>>>> 484c407303fdee430a89e57180ea127afcc198a8
-
- %   expi.c_trial.light_vec = power_vec; 
-
- %   disp(['trial  ' (num2str(aa))])
-   
-    %% this is where we put the pattern setting code    
-%        expi.c_trial.name = ['OL_B_' num2str(aa)];
-
-%    expi.c_trial.rep_num         = aa;
-%    expi.c_trial.light_power     = c_power;
+   expi.c_trial.rep_num         = aa;
+   expi.c_trial.light_power     = c_power;
     
     %% run exp trial
-%    expi = run_az_PL_OL_trial(expi, app);
+   expi = run_az_PL_OL_trial(expi, app);
 
-%    Panel_tcp_com('all_off')
-%    pause(3)
-%    app.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
+   Panel_tcp_com('all_off')
+   pause(3)
+  app.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
 
-%    if expi.settings.is_imaging == 1
-%        disp('hit space to continue')
-%        pause()
-%    else
-%        pause(10)
-%    end
+   if expi.settings.is_imaging == 1
+       disp('hit space to continue')
+       pause()
+   else
+       pause(10)
+   end
     
-%end
+end
+
 
 close_tcp();
 app.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
