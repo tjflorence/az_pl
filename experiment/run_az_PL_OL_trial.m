@@ -160,15 +160,19 @@ else
     elseif expr.c_trial.data.xpos(expr.c_trial.data.count) == 97;
         expr.c_trial.data.xpos(expr.c_trial.data.count) = 96;
     end
-        
-    Panel_tcp_com('set_position', [ expr.c_trial.data.xpos(expr.c_trial.data.count) 1])
-   	cpower = expr.settings.light_power;
+    
+    if isnan(expr.c_trial.data.xpos(expr.c_trial.data.count))
+     Panel_tcp_com('all_off')   
+    else
+        Panel_tcp_com('set_position', [ expr.c_trial.data.xpos(expr.c_trial.data.count) 1])
+    end
+    cpower = -4.99;
 
 end
 
 expr.c_trial.data.vfwd(expr.c_trial.data.count)   = Vfwd;
 expr.c_trial.data.vss(expr.c_trial.data.count)    = Vss;
-expr.c_trial.data.om(expr.c_trial.data.count)  = Omega;
+expr.c_trial.data.om(expr.c_trial.data.count)     = Omega;
 
 tframe = mod(expr.c_trial.data.count, 2);
 
