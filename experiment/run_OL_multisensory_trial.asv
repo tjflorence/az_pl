@@ -206,16 +206,23 @@ expr.c_trial.data.timestamp(expr.c_trial.data.count)=toc(timer1);
             
             if expr.c_trial.viz_vec(expr.c_trial.data.count) == 0
                 Panel_tcp_com('all_off')
-            else   
+            else
+                
                 Panel_tcp_com('set_position', [48 1])
+
+                
             end
             
         case 'env(OL)'
             
             if expr.c_trial.viz_vec(expr.c_trial.data.count) == 0
                 Panel_tcp_com('all_off')
-            else 
+            else
+                
+
+                
                 c_xpos = expr.c_trial.viz_pos_vec(expr.c_trial.data.count);
+
                 Panel_tcp_com('set_position', [c_xpos 1])
                 
             end
@@ -230,6 +237,7 @@ expr.c_trial.data.timestamp(expr.c_trial.data.count)=toc(timer1);
              else
                 
                 c_xpos = expr.c_trial.data.xpos(expr.c_trial.data.count);
+
                 Panel_tcp_com('set_position', [c_xpos 1])
                 
             end           

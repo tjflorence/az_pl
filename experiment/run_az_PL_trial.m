@@ -212,11 +212,22 @@ else
        
        
     end
-
-
-        Panel_tcp_com('set_position', [ expr.c_trial.data.xpos(expr.c_trial.data.count) 1])
+    
+    
+    
         cpower = expr.c_trial.light_vec(expr.c_trial.data.xpos(expr.c_trial.data.count));    
     
+        if expr.settings.is_dynamic_off
+            
+            if c_power < expr.settings.light_power
+                Panel_tcp_com('all_off')
+            else
+               Panel_tcp_com('set_position', [ expr.c_trial.data.xpos(expr.c_trial.data.count) 1])
+            end
+            
+        else
+           Panel_tcp_com('set_position', [ expr.c_trial.data.xpos(expr.c_trial.data.count) 1])
+        end
 end
 
 expr.c_trial.data.vfwd(expr.c_trial.data.count)   = Vfwd;

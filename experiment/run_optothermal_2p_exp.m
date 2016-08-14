@@ -7,9 +7,9 @@ daqreset
 %% experiment level settings
 %  names
 expi.settings.name       = 'dir_resp';
-expi.settings.geno       = 'HC-Gal4x5a';
-expi.settings.notes      = 'fly 2 r removed';
-expi.settings.img_name   = 'fly 2 r removed';
+expi.settings.geno       = 'tdc2-gal4, UAS-Gcamp6m';
+expi.settings.notes      = 'ST exp1';
+expi.settings.img_name   = 'fly 1';
 expi.settings.age        = 4;
 expi.settings.date       = datestr(now, 'yyyymmddHHMMSS');
 expi.settings.fname      = [expi.settings.date '_' expi.settings.geno '_' ...
@@ -18,23 +18,31 @@ expi.settings.savedir    = 'C:\hot-dir\';
 % parameters
 expi.settings.rot_gain       = .02;
 expi.settings.fwd_gain       = 1;
-expi.settings.hz             = 10;
+expi.settings.hz             = 10; 
 expi.settings.num_reps       = 100;
 
-expi.settings.viz(1).pnum = nan;
-expi.settings.viz(1).name = 'all_off';
-expi.settings.viz(1).gains = 0;
-expi.settings.viz(1).rando_gains = 0;
+expi.settings.viz(1).stim_num = 1;
+expi.settings.viz(1).pat_num = nan;
+expi.settings.viz(1).name = 'flick_on';
+expi.settings.viz(1).gains_hz = 0;
+expi.settings.viz(1).gains_pat = 0;
 
-expi.settings.viz(2).pnum = 1;
-expi.settings.viz(2).name = 'optomotor';
-expi.settings.viz(2).gains = [-34 0 34];
-expi.settings.viz(2).rando_gains = nan(expi.settings.num_reps,...
-                                    length(expi.settings.viz(2).gains));
+expi.settings.viz(2).stim_num = 2;
+expi.settings.viz(2).pat_num = nan;
+expi.settings.viz(2).name = 'flick_off';
+expi.settings.viz(2).gains_hz = 0;
+expi.settings.viz(2).gains_pat = 0;
 
-expi.settings.light_power    = [-4 -1.5 1 3.5];
+expi.settings.viz(3).stim_num = 3;
+expi.settings.viz(3).pat_num = 1;
+expi.settings.viz(3).name = 'optomotor'; 
+expi.settings.viz(3).pix_width = 16;
+expi.settings.viz(3).gains_hz = [-50, -5, -1, -.5,  0, .5, 1, 5, 50];
+expi.settings.viz(3).gains_pat = expi.settings.viz(3).gains_hz*expi.settings.viz(3).pix_width;
+
+expi.settings.light_power    = [1];
 expi.settings.startXYT       = [96 96 0];
-expi.settings.dark_time      = 60;
+expi.settings.dark_time      = 0;
 expi.settings.fix_time       = 0;
 expi.settings.prestim_time   = 3;
 expi.settings.poststim_time = 3;
@@ -82,7 +90,7 @@ expi.settings.fullpath = pwd;
 save('C:\meta_expi.mat', 'expi')
 
 %% initialize cxn to panel host
-%init_tcp();
+init_tcp();
 %Panel_tcp_com('set_pattern_id', [1])
 %Panel_tcp_com('stop')
 
@@ -111,16 +119,58 @@ blank_datamat = blank_datavec;
 %% now run trials
 f1 = figure('color', 'w', 'position', [27 607 727 380]);
 for aa = 1:(expi.settings.num_reps*3)
+
+   half_trial_samples = expi.settings.prestim_time*expi.settings.hz;
+
+   %% visual stimulus control vec
+   exp_stimulus_vec = [zeros(1, half_trial_samples) 1 zeros(1, 1.1*half_trial_samples)];
    
-   c_power = expi.settings.light_power(randperm(length(expi.settings.light_power)));
-   c_power = c_power(1);
-   opto_idx = 0;
-   exp_idx = 0;
+   %% visual selection
+   viz_selection_vec = [1 2 3*ones(1,9)];
+   viz_selection_vec = viz_selection_vec(randperm(length(viz_selection_vec)));
+   c_vis_type = viz_selection_vec(1); 
    
-   tmod = mod(aa, 3);
-   if tmod == 0
-       tmod = 3;
+   if c_vis_type == 1
+        
+       viz_name = 'flick_on';
+       
+       c_gain_hz = 0;
+       c_gain_pat = 0;
+             
+   elseif c_vis_type == 2
+       
+       viz_name = 'flick_off';
+
+       c_gain_hz = 0;
+       c_gain_pat = 0;
+       
+   elseif c_vis_type == 3
+       
+       viz_name = 'optomotor';
+       rand_gain_vec = randperm(9);
+       c_gain_idx = rand_gain_vec(1);
+       
+       c_gain_hz = expi.settings.viz(3).gains_hz(c_gain_idx);
+       c_gain_pat = expi.settings.viz(3).gains_pat(c_gain_idx);
+
    end
+   
+   %% hot light selection
+   hot_selection_vec = [0 1];
+   hot_selection_vec = randperm(length(hot_selection_vec));
+   c_hot_type = hot_selection_vec(1);
+   
+    if c_hot_type == 0
+    
+        light_vec = -4.99*ones(1, 2.2*half_trial_samples);
+        hot_name = 'hot_0';
+        
+    else
+        
+        light_vec = [-4.99*ones(1, half_trial_samples) expi.settings.light_power*ones(1, 1.1*half_trial_samples)];
+        hot_name = 'hot_1';   
+        
+    end
         
    try
         expi = rmfield(expi, 'c_trial');
@@ -148,49 +198,34 @@ for aa = 1:(expi.settings.num_reps*3)
     expi.c_trial.player.th   = expi.c_trial.startXYT(3);
 
     expi.c_trial.data.video_frames = nan(1024/2, 1280/2, (expi.c_trial.trial_time*expi.settings.hz)+100);
-    expi.c_trial.light_vec = [-4.99*ones(1, (expi.settings.trial_time*expi.settings.hz)+100)];
-    expi.c_trial.light_vec( (expi.settings.prestim_time*expi.settings.hz):...
-                            (floor(expi.settings.hz/2)+(expi.settings.prestim_time*expi.settings.hz))) = c_power;
+    
+    expi.c_trial.hot = c_hot_type;
+    expi.c_trial.light_vec = light_vec;
+    
+    expi.c_trial.viz_name = viz_name;
+    expi.c_trial.viz_type = c_vis_type;
+    expi.c_trial.c_gain_hz = c_gain_hz;
+    expi.c_trial.c_gain_pat = c_gain_pat;
+    expi.c_trial.stimulus_vec = exp_stimulus_vec;
 
+    disp([' rep ' (num2str(aa)) ' type ' viz_name ' gain ' num2str(c_gain_hz) ' ' hot_name])
 
-    disp(['power ' num2str(c_power) ' rep ' (num2str(aa))])
-   
-    %% this is where we put the pattern setting code    
-    pat_name = 'none';
-    c_gain = expi.settings.viz(2).gains(tmod);
-        
-   % Panel_tcp_com('set_pattern_id', 1);
-   % Panel_tcp_com('set_position', [24, 1]);
-   % Panel_tcp_com('send_gain_bias', [c_gain, 0, 0, 0])
-   % Panel_tcp_com('start')
-
-    dither_vec = .1*[0 1];
-    dither_vec = dither_vec(randperm(length(dither_vec)));
-
-    expi.c_trial.dither = dither_vec(1)+(.01*randn(1));
-    expi.c_trial.name = [expi.settings.prefix(2).text '_tnum_' '_rep_' sprintf('%03d',aa)...
-                                    '_power_' sprintf('%02d', c_power)...
-                                    '_pat_' pat_name ...
-                                    '_gain_' num2str(c_gain)];
+    expi.c_trial.name = ['env_rep_' num2str(aa, '%03d')...
+                                    '_pat_' expi.c_trial.viz_name ...
+                                    '_hot_' num2str(c_hot_type) ...                                 
+                                    '_gain_' num2str(c_gain_hz)];
                                 
     expi.c_trial.rep_num         = aa;
-    expi.c_trial.light_power     = c_power;
-    expi.c_trial.vis_gain        = c_gain;    
-    
-    %disp(['current trial: ' expi.c_trial.name])
-    
-  % closepreview(vi_m);
+
     %% run exp trial
     expi = run_thermo_opto_2p_trial(expi, app, vi_m);
 
- %   preview(vi_m)
- %   Panel_tcp_com('stop')
- %   Panel_tcp_com('all_off')
+	Panel_tcp_com('stop')
+	Panel_tcp_com('all_off')
     app.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
     
-
     cval = ['rkb'];
-    plot(expi.c_trial.data.om, 'Linewidth', 2, 'color', cval(tmod));
+    plot(expi.c_trial.data.om, 'Linewidth', 2, 'color', 'r');
     hold off
     
     disp('paused, retrigger w/ spacebar')
