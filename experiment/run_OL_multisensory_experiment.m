@@ -18,7 +18,7 @@ expi.settings.savedir    = 'C:\hot-dir\';
 expi.settings.rot_gain       = .4;
 expi.settings.fwd_gain       = 1;
 expi.settings.hz             = 50; 
-expi.settings.num_reps       = 3;
+expi.settings.num_reps       = 2;
 
 expi.settings.light_power    = [1];
 expi.settings.prestim_time   = 10;
@@ -159,7 +159,8 @@ for aa = 1:length(expi.settings.exp_order)
 close_tcp();
 app.ao.outputSingleScan([-4.99 0 0 -4.99 1 0 0])
 
-copyfile('C:\MatlabRoot\raycast\functional\run_optothermal.m', expi.settings.fullpath)
-copyfile('C:\MatlabRoot\raycast\functional\run_thermo_opto_trial.m', expi.settings.fullpath)
+copyfile('C:\MatlabRoot\az_pl\experiment\run_OL_multisensory_experiment.m', expi.settings.fullpath)
+copyfile('C:\MatlabRoot\az_pl\experiment\run_OL_multisensory_trial.m', expi.settings.fullpath)
+copyfile('C:\MatlabRoot\az_pl\experiment\generate_multisensory_stimulus_struct.m', expi.settings.fullpath)
 
 cd('C:\')

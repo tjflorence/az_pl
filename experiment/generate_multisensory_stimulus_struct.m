@@ -1,9 +1,10 @@
 function expi = generate_multisensory_stimulus_struct(expi) 
 
-expi.settings.stim_names = {'dark', 'light', 'env(stat)', 'env(OL)', 'env(CL)', 'noHeat', 'heat'};
+expi.settings.stim_names = {'dark', 'light', 'env(stat)', 'env(OL)', 'env(CL)', 'noHeat', 'heat', 'cool'};
+
 % logicals for if a stimulus is visual or thermal
 isThermal = zeros(1, numel(expi.settings.stim_names));
-isThermal(end-1:end) = 1;
+isThermal(end-2:end) = 1;
 isViz = ~isThermal;
 
 % generate stimuli vec
@@ -17,6 +18,11 @@ thermal_ref_frame = [-4.99*ones(1, expi.settings.prestim_time*expi.settings.hz) 
                         expi.settings.light_power*ones(1, expi.settings.ref_stim_time*expi.settings.hz)...
                         -4.99*ones(1, expi.settings.prestim_time*expi.settings.hz)];
 
+cool_ref_frame = [expi.settings.light_power*ones(1, expi.settings.prestim_time*expi.settings.hz) ...
+                        -4.99*ones(1, expi.settings.ref_stim_time*expi.settings.hz)...
+                        expi.settings.light_power*ones(1, expi.settings.prestim_time*expi.settings.hz)];
+                    
+
 no_thermal_ref_frame = -4.99*ones(1, length(thermal_ref_frame));
 
 viz_test_frame = [zeros(1, expi.settings.hz*(expi.settings.prestim_time+(.5*expi.settings.test_stim_time) )) ...
@@ -27,6 +33,10 @@ thermal_test_frame = [-4.99*ones(1, expi.settings.hz*(expi.settings.prestim_time
                     expi.settings.light_power*ones(1, expi.settings.hz*(expi.settings.test_stim_time)) ...
                     -4.99*ones(1, expi.settings.hz*(expi.settings.prestim_time+(.5*expi.settings.test_stim_time) )) ];
 
+cool_test_frame = [expi.settings.light_power*ones(1, expi.settings.hz*(expi.settings.prestim_time+(.5*expi.settings.test_stim_time) )) ...
+                    -4.99*ones(1, expi.settings.hz*(expi.settings.test_stim_time)) ...
+                    expi.settings.light_power*ones(1, expi.settings.hz*(expi.settings.prestim_time+(.5*expi.settings.test_stim_time) )) ];
+                
 no_viz_test_frame = [zeros(1, length(viz_test_frame))];
 no_thermal_test_frame = [-4.99*ones(1, length(viz_test_frame))];
 
@@ -84,8 +94,10 @@ for yy = 1:size(legalCombos, 1)
                 
                 if stim_struct(stim_idx).ref_num == 6
                    stim_struct(stim_idx).ref_vec = no_thermal_ref_frame;
-                else
+                elseif stim_struct(stim_idx).ref_num == 7
                    stim_struct(stim_idx).ref_vec = thermal_ref_frame;
+                else
+                   stim_struct(stim_idx).ref_vec = cool_ref_frame;                    
                 end
                 
                 stim_struct(stim_idx).therm_vec = stim_struct(stim_idx).ref_vec;
@@ -107,8 +119,10 @@ for yy = 1:size(legalCombos, 1)
                 
                 if stim_struct(stim_idx).test_num == 6
                    stim_struct(stim_idx).test_vec = no_thermal_test_frame;
-                else
+                elseif stim_struct(stim_idx).test_num == 7                 
                    stim_struct(stim_idx).test_vec = thermal_test_frame;
+                else
+                   stim_struct(stim_idx).test_vec = cool_test_frame; 
                 end
                 
                 stim_struct(stim_idx).therm_vec = stim_struct(stim_idx).test_vec;
