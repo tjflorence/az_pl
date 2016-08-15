@@ -1,4 +1,4 @@
-function [frame_4d, frame_MIP, img_frame_id, tstamp, entered_stack_data] = parse_azPL_imgfile_gpu(syncdir, idir, bdir)
+function [frame_4d, frame_MIP, img_frame_id, tstamp] = parse_azPL_imgfile_gpu(syncdir, idir, bdir)
 
 ds_factor = 0.33;
                     
@@ -8,7 +8,7 @@ homedir =pwd;
 cd(idir);
 xml_h = dir('Experiment.xml');
 
-test_xml = [pwd dash xml_h.name];
+test_xml = [pwd '\' xml_h.name];
 xstruct = xml2struct(test_xml);
 pixX = str2num(xstruct.ThorImageExperiment.LSM.Attributes.pixelX);
 pixY = str2num(xstruct.ThorImageExperiment.LSM.Attributes.pixelY);
@@ -19,11 +19,11 @@ ds_pixX = size(test_ds_plane, 2);
 ds_pixY = size(test_ds_plane, 1);
 
 ifile_h = dir('Image*');
-test_ifile = [pwd dash ifile_h.name];
+test_ifile = [pwd '\' ifile_h.name];
 
 cd(syncdir)
 sync_h = dir('Episode*');
-test_syncfile = [pwd dash sync_h.name];
+test_syncfile = [pwd '\' sync_h.name];
 
 %% read out frame data
 frame_out = h5read(test_syncfile, '/DI/Frame Out');
@@ -54,25 +54,33 @@ close all
 
 %% read out piezo data
 pz_pos = h5read(test_syncfile, '/AI/Piezo Monitor');
-sm_pz_pos = conv(pz_pos, ones(100,1)/100, 'same');
-diff_pz_pos = diff([sm_pz_pos]);
+%% plot piezo and frame acq
+if exist([bdir '/' 'stack_data.mat'], 'file') == 0
 
-start_trash_idx = 1;
-end_trash_idx   = find(diff_pz_pos>=0, 1, 'first');
+    f1 = figure('Position', [ 65   541   790   414]);
+    plot(pz_pos(1:10000));
+    hold on
+    scatter(frame_idx(frame_idx<10000),pz_pos(frame_idx(frame_idx<10000)), 'r' );
 
-start_stack_idx = end_trash_idx+1;
-end_stack_idx   = find(diff_pz_pos(start_stack_idx:end)<=0, 1, 'first')+start_stack_idx;
+    disp('**************************************************')
+    trash_frames = input('Input number of trash frames: ');
+    disp('**************************************************')
+    stack_frames = input('Input number of stack frames: ');
+    disp('**************************************************')
+    flyback_frames = input('Input number of flyback frames: ');
+    disp('**************************************************')
 
-start_flyback_idx   = end_stack_idx+1;
-end_flyback_idx     = find(diff_pz_pos(start_flyback_idx:end)>=0, 1, 'first')+start_flyback_idx;
+    disp(['trash frames = ' num2str(trash_frames)]);
+    disp(['stack frames = ' num2str(stack_frames)]);
+    disp(['flyback frames = ' num2str(flyback_frames)]);
+    save([bdir '/stack_data.mat'], 'trash_frames', 'stack_frames', 'flyback_frames')
+    disp('continuing...')
 
-trash_frames_idx = find(frame_idx<end_trash_idx);
-stack_frames_idx = find(frame_idx>start_stack_idx & frame_idx<end_stack_idx);
-flyback_frames_idx = find(frame_idx>start_flyback_idx & frame_idx<end_flyback_idx);
+else
 
-trash_frames = numel(trash_frames_idx);
-stack_frames = numel(stack_frames_idx);
-flyback_frames = numel(flyback_frames_idx);
+    load([bdir '/' 'stack_data.mat'])
+    
+end
 
 %% read out frame data, collapse to MIPs
 i_h = fopen(test_ifile, 'r');
@@ -114,7 +122,7 @@ while (c_imgframe ~= 0) %&& (frame_num < length(frame_idx))
 
     
     end
-    
+   
     sync_pos = frame_idx(frame_num);
     tstamp = [tstamp sync_pos/10000];
     c_imgframe = clk_vec(sync_pos);

@@ -5,13 +5,13 @@ home_dir = pwd;
 exp_trials = dir('env*');
 load(exp_trials(1).name)
 
-df_stack = std(expr.c_trial.idata.mcorr_dF, [],  3);
+df_stack = std(expr.c_trial.idata.frame_MIP, [],  3);
 %for ii = 2:45
 for ii = 1:2:length(exp_trials)
    
     load(exp_trials(ii).name)
     if isfield(expr.c_trial, 'idata')
-        std_var = std(expr.c_trial.idata.mcorr_dF,[], 3);
+        std_var = std(expr.c_trial.idata.frame_MIP,[], 3);
         df_stack = cat(3, df_stack, std_var);
     end
 end

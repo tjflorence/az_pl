@@ -119,12 +119,12 @@ hold on
 
 hold on
 
-    c_xy = roi_auto_struct(kk).xy;
+    c_xy = roi_struct(kk).xy;
     
     hold on
     
     scat_h = fill(c_xy(:,1), c_xy(:,2), 'r');
-    set(scat_h, 'LineWidth', 4, 'FaceColor', 'none', 'EdgeColor', roi_auto_struct(kk).cmap);
+    set(scat_h, 'LineWidth', 4, 'FaceColor', 'none', 'EdgeColor', roi_struct(kk).cmap);
  
  
  

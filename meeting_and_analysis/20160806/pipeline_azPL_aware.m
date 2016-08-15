@@ -1,8 +1,8 @@
 clear all
 
-bdir = '\\reiser_nas\tj\az_pl\behavior\2016-08-08\20160808211216_11f03_az_PL-coincidence';
-idir = '\\reiser_nas\tj\az_pl\imaging\20160808\fly2_11f03_CL';
-syncdir = '\\reiser_nas\tj\az_pl\imaging\20160808\fly2_11f03_CL';
+bdir = '\\reiser_nas\tj\az_pl\behavior\2016-08-14\20160814202003_11f03_az_PL';
+idir = '\\reiser_nas\tj\az_pl\imaging\20160814\fly2_11f03_CL';
+syncdir = '\\reiser_nas\tj\az_pl\imaging\20160814\fly2_11f03_CL';
 
 local_processing_dir = 'D:\temp\';
 processed_data_server = '\\reiser_nas\tj\az_pl\processed\';
@@ -33,7 +33,6 @@ tic
 for ii = 3:length(idir_files)
     copyfile([idir '\' idir_files(ii).name], [local_processing_dir idir(last_idash_idx+1:end) '\' idir_files(ii).name])
 end
-delete(gcp('nocreate'))
 
 for ii = 3:length(bdir_files)
     copyfile([ bdir '\' bdir_files(ii).name], [local_processing_dir bdir(last_bdash_idx+1:end)])
@@ -42,8 +41,8 @@ toc
 
 ref_img = [];
 
-%process_azPL_experiment(bdir)
-parse_azPL_experiment(new_bdir, new_idir, 5, 65)
+process_azPL_experiment(bdir)
+parse_azPL_experiment(new_bdir, new_idir, 3, 65)
 cd(new_bdir)
 
 try

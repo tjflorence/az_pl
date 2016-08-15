@@ -46,7 +46,7 @@ delete(gcp('nocreate'))
 for ii = 3:length(bdir_files)
     copyfile([ bdir '\' bdir_files(ii).name], [local_processing_dir bdir(last_bdash_idx+1:end)])
 end
-toc
+
 
 
 %% apply processing to data folders 
@@ -56,17 +56,21 @@ end
 parse_azPL_experiment(new_bdir, new_idir, parse_ver, test_length)
 cd(new_bdir)
 
-load('path_list.mat')
+load_struct = load('path_list.mat');
+sum_struct = load_struct.sum_struct;
 
-parfor ii = 1:length(sum_struct.fpaths);
+parfor ii = 2:length(sum_struct.fpaths)-1;
     
   bfile = sum_struct.fpaths(ii).bpath;
   idir = sum_struct.fpaths(ii).ipath;
   syncdir = sum_struct.fpaths(ii).spath;
     
   if ~isempty(bfile) && ~isempty(idir) && ~isempty(syncdir)
+      try
     add_img_to_behav(new_bdir, bfile, idir, syncdir);
-
+      catch
+          disp(['stitch error' disp(num2str(ii))])
+      end
   else
       disp(['data quality criteria excluded trial ' num2str(ii)])
   end

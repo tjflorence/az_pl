@@ -18,10 +18,10 @@ for aa = 1:length(exp_files)
     for ii = 1:length(roi_struct)
         for jj = 1:size(expr.c_trial.idata.df_frames,3)
         
-            c_frame = expr.c_trial.idata.mcorr_dF(:,:,jj);
+            c_frame = expr.c_trial.idata.frame_MIP(:,:,jj);
             roi_pix = c_frame(roi_struct(ii).mask==1);
         
-            expr.c_trial.idata.roi_traces(ii,jj) = mean(roi_pix);  
+            expr.c_trial.idata.roi_traces(ii,jj) = (mean(roi_pix)-mean(prctile(roi_pix, 10)))/mean(prctile(roi_pix, 10));  
         
         end
     end
@@ -42,10 +42,10 @@ for aa = 1:length(ol_files)
     for ii = 1:length(roi_struct)
         for jj = 1:size(expr.c_trial.idata.mcorr_dF,3)
         
-            c_frame = expr.c_trial.idata.mcorr_dF(:,:,jj);
+            c_frame = expr.c_trial.idata.frame_MIP(:,:,jj);
             roi_pix = c_frame(roi_struct(ii).mask==1);
         
-            expr.c_trial.idata.roi_traces(ii,jj) = mean(roi_pix);  
+            expr.c_trial.idata.roi_traces(ii,jj) = (mean(roi_pix)-mean(prctile(roi_pix, 10)))/mean(prctile(roi_pix, 10));  
         
         end
     end
