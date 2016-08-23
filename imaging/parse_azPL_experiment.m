@@ -87,6 +87,8 @@ elseif expver == 3
         
     end
     
+    bsort.name
+    
 elseif expver == 4
     
     %% use for OL stim experiment
@@ -181,6 +183,8 @@ for ii = 1:length(bsort)
    
    %% checks for behavior files -- sometime read errors from ball
    % throw off sync
+   [bdir dash bsort(ii).name]
+   
    load([bdir dash bsort(ii).name])
    
    if ~isfield(expr.c_trial, 'bdata')

@@ -1,7 +1,7 @@
 function plot_azPL_cool_align_sequence(expdir, is_auto)
 
 train_files = dir('env_train*');
-train_files = train_files(1:10);
+%train_files = train_files(1:10);
 
 if isempty(is_auto)
     is_auto = 0;
@@ -45,6 +45,7 @@ for c_roi = 1:length(roi_struct)
                 
                 expected_hz = floor(length(expr.c_trial.idata.roi_traces)/expr.settings.trial_time);
                 c_trace = c_trace(1:(expected_hz*(lead_seconds+lag_seconds)));
+                c_trace = c_trace-mean(c_trace(1:10));
                 aligned_traces = [aligned_traces; c_trace];
 
             end

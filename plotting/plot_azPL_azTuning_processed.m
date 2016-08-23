@@ -77,7 +77,7 @@ s1 = subplot(3,1,1);
         c_vec = [];
         x_vec = [];
     
-        for ii = 3:3:96
+        for ii = 1:1:96
     
             c_vec = [mean(c_trace(find(c_pos==ii))) c_vec ];
             x_vec = [ii x_vec];
@@ -130,7 +130,7 @@ s3 = subplot(3,1,3);
         c_vec = [];
         x_vec = [];
     
-        for ii = 3:3:96
+        for ii = 1:1:96
     
             c_vec = [mean(c_trace(find(c_pos==ii))) c_vec ];
             x_vec = [ii x_vec];

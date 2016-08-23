@@ -1,4 +1,4 @@
-function [frame_4d, frame_MIP, img_frame_id, tstamp] = parse_azPL_imgfile_gpu(syncdir, idir, bdir)
+function [frame_4d, frame_MIP, img_frame_id, tstamp] = parse_azPL_imgfile(syncdir, idir, bdir)
 
 ds_factor = 0.33;
 
@@ -183,18 +183,18 @@ fclose(i_h);
     
 
 % step 2: medfilt in time
-parfor ii = 1:size(frame_MIP, 1);
+for ii = 1:size(frame_MIP, 1);
    
-    frame_MIP(ii,:,:) = medfilt2(gpuArray(squeeze(frame_MIP(ii,:,:))), [3 3]);
+    frame_MIP(ii,:,:) = medfilt2(squeeze(frame_MIP(ii,:,:)), [3 3]);
     
 end
 
 % step 3: medfilt in space, add gaussblur
-parfor ii = 1:size(frame_MIP, 3)
+for ii = 1:size(frame_MIP, 3)
     
  %   frame_MIP(:,:,ii) = imgaussfilt(medfilt2(frame_MIP(:,:,ii), [3 3]), 1);
 
-    frame_MIP(:,:,ii) = medfilt2(gpuArray(frame_MIP(:,:,ii)), [3 3]);
+    frame_MIP(:,:,ii) = medfilt2(frame_MIP(:,:,ii), [3 3]);
 end
 
 cd(homedir)
