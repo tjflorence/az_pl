@@ -83,9 +83,10 @@ for jj = 1:num_expfiles
         expr.c_trial.idata.target_y_ind = max_y_ind;
         expr.c_trial.idata.diff_y = expr.c_trial.idata.target_y_ind - expr.c_trial.idata.cmax_y_ind;
         
-        pre_correct_shift = circshift(expr.c_trial.idata.frame_MIP, ...
-                                        [round(expr.c_trial.idata.diff_y), 0, 0]);
-                                    
+      %  pre_correct_shift = circshift(expr.c_trial.idata.frame_MIP, ...
+       %                                 [round(expr.c_trial.idata.diff_y), 0, 0]);
+        
+       pre_correct_shift = expr.c_trial.idata.frame_MIP;
         %% motion correct
         img_obj = nia_movie();
         img_obj.loadFlatMovie(pre_correct_shift);

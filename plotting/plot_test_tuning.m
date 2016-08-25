@@ -5,16 +5,18 @@ load('auto_roi_data.mat')
 
 load('env_test_rep_001.mat')
 
+expr.c_trial.bdata = expr.c_trial.data;
+
 pre_xvals = expr.c_trial.bdata.trial_th;
 pre_iframes = expr.c_trial.bdata.c_iframe(251:end);
 pre_roi_data = expr.c_trial.idata.auto_roi_traces;
 
-load('env_test_rep_012.mat')
+load('env_test_rep_017.mat')
 
+expr.c_trial.bdata = expr.c_trial.data;
 post_xvals = expr.c_trial.bdata.trial_th;
 post_iframes = expr.c_trial.bdata.c_iframe(251:end);
 post_roi_data = expr.c_trial.idata.auto_roi_traces;
-
 
 img_hz = (1/mean(diff(expr.c_trial.idata.tstamp)));
 behavior_hz = expr.settings.hz;

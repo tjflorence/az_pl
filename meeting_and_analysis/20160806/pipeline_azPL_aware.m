@@ -1,8 +1,8 @@
 clear all
 
-bdir = '\\reiser_nas\tj\az_pl\behavior\2016-08-14\20160814202003_11f03_az_PL';
-idir = '\\reiser_nas\tj\az_pl\imaging\20160814\fly2_11f03_CL';
-syncdir = '\\reiser_nas\tj\az_pl\imaging\20160814\fly2_11f03_CL';
+bdir = '\\reiser_nas\tj\az_pl\behavior\2016-08-18\20160818205601_11f03_az_PL';
+idir = '\\reiser_nas\tj\az_pl\imaging\20160818\fly4b_11f03_CL';
+syncdir = '\\reiser_nas\tj\az_pl\imaging\20160818\fly4b_11f03_CL';
 
 local_processing_dir = 'D:\temp\';
 processed_data_server = '\\reiser_nas\tj\az_pl\processed\';
@@ -41,7 +41,7 @@ toc
 
 ref_img = [];
 
-process_azPL_experiment(bdir)
+process_azPL_experiment(new_bdir)
 parse_azPL_experiment(new_bdir, new_idir, 3, 65)
 cd(new_bdir)
 
@@ -75,10 +75,10 @@ mcorr_azPL(pwd, ref_img);
 auto_process_roi_v2(pwd);
 add_azPL_auto_roi_data(pwd);
 
-%plot_azPl_roi_by_trial(pwd, 2, 1);
-%plot_azPL_cool_align_sequence(pwd, 1);
+plot_azPl_roi_by_trial(pwd, 2, 1);
+plot_azPL_cool_align_sequence(pwd, 1);
 %plot_azPL_cool_align_errortrial(pwd, 1);
-%adaptation_idx(pwd, 1);
+adaptation_idx(pwd, 1);
 
 
 dashes = strfind(new_bdir, '\');

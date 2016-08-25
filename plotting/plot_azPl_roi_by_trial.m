@@ -18,10 +18,8 @@ else
     roi_struct = roi_auto_struct;
 end
 
-
 kk = 1; %roi
 jj = 1; %trial
-
 
 %% make sbd pattern to plot at side
 bars = fliplr(repmat([zeros(32, 8) ones(32, 8)], [1 2]));
@@ -43,12 +41,11 @@ sbd_r = flipud(sbd');
 dilate_factor = 10;
 exp_files = dir('env*');
 % load first exp file for params
-load(exp_files(5).name)
+load(exp_files(2).name)
 
-if isfield(expr.c_trial, 'bdata')
+%if ~isfield(expr.c_trial, 'data')
     expr.c_trial.data = expr.c_trial.bdata;
-
-end
+%end
 
 length_heat_env = round(length(expr.c_trial.data.trial_th)/expr.settings.hz*dilate_factor);
 test_heat_env_map = [8*ones(96, expr.c_trial.dark_time*dilate_factor) ...
