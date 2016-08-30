@@ -15,14 +15,17 @@ for aa = 1:length(exp_files)
     expr.c_trial.idata.roi_traces = nan(length(roi_auto_struct), size(expr.c_trial.idata.mcorr_dF,3));
     
     for ii = 1:length(roi_auto_struct)
-        for jj = 1:size(expr.c_trial.idata.mcorr_dF,3)
+        for jj = 1:size(expr.c_trial.idata.mcorr_MIP,3)
         
-            c_frame = expr.c_trial.idata.mcorr_dF(:,:,jj);
+            c_frame = expr.c_trial.idata.mcorr_MIP(:,:,jj);
             roi_pix = c_frame(roi_auto_struct(ii).BW==1);
         
             expr.c_trial.idata.auto_roi_traces(ii,jj) = mean(roi_pix);  
         
         end
+        
+            expr.c_trial.idata.auto_roi_traces(ii,:) = (expr.c_trial.idata.auto_roi_traces(ii,:)-mean(expr.c_trial.idata.auto_roi_traces(ii,:)) )...
+                                                ./prctile(expr.c_trial.idata.auto_roi_traces(ii,:), 10);
     end
     
     save(exp_files(aa).name, 'expr', '-v6')

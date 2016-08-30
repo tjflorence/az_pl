@@ -1,13 +1,13 @@
-function roi_select_azPL()
+function roi_select_oct(trial)
 
 home_dir = pwd;
 
 exp_trials = dir('env*');
-load(exp_trials(1).name)
+load(exp_trials(trial).name)
 
 df_stack = std(expr.c_trial.idata.mcorr_MIP, [],  3);
 %for ii = 2:45
-for ii = 1:2:length(exp_trials)
+for ii = trial
    
     load(exp_trials(ii).name)
     if isfield(expr.c_trial, 'idata')
@@ -31,12 +31,13 @@ whitebg('black')
 close all;
 
 mdf_stack = mean(df_stack, 3);
-hist_data = mdf_stack(4:end-3, 4:end-3);
-hist(hist_data(:), 100);
+
+data_to_hist = mdf_stack(4:end-3, 4:end-3);
+hist(data_to_hist(:), 100);
 ylim
 
 low_val = input('select low val');
-hi_val = input('select high val');
+hi_val = input('select high val')
 
 imagesc(mdf_stack);
 caxis([low_val hi_val])
@@ -94,7 +95,7 @@ close all
 f1 = figure;
 
 img_F = std(expr.c_trial.idata.mcorr_dF,[], 3);
-imagesc(img_F);
+imagesc(mdf_stack);
 
 min_val = min(min(img_F(4:end-3, 4:end-3)));
 max_val = max(max(img_F(4:end-3, 4:end-3)));

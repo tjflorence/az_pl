@@ -198,6 +198,8 @@ set(f1, 'PaperPositionMode','Auto',...
 
 
 print(f1, ['auto_selected_roi.pdf'], '-dpdf', '-r0', '-opengl');
+whitebg('w')
+close all
 
 cd(expdir)
 

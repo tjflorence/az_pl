@@ -1,8 +1,8 @@
 clear all
 
-bdir = '\\reiser_nas\tj\az_pl\behavior\2016-08-18\20160818205601_11f03_az_PL';
-idir = '\\reiser_nas\tj\az_pl\imaging\20160818\fly4b_11f03_CL';
-syncdir = '\\reiser_nas\tj\az_pl\imaging\20160818\fly4b_11f03_CL';
+bdir = '\\reiser_nas\tj\az_pl\behavior\2016-08-18\20160818160452_11f03_az_PL-ant_rm';
+idir = '\\reiser_nas\tj\az_pl\imaging\20160818\fly3_11f03rm_CL';
+syncdir = '\\reiser_nas\tj\az_pl\imaging\20160818\fly3_11f03rm_CL';
 
 local_processing_dir = 'D:\temp\';
 processed_data_server = '\\reiser_nas\tj\az_pl\processed\';
@@ -60,26 +60,34 @@ for ii = 1:length(sum_struct.fpaths);
   idir = sum_struct.fpaths(ii).ipath;
   syncdir = sum_struct.fpaths(ii).spath;
     
-  if ~isempty(bfile) && ~isempty(idir) && ~isempty(syncdir)
-    add_img_to_behav(new_bdir, bfile, idir, syncdir);
+  try
+      
+    if ~isempty(bfile) && ~isempty(idir) && ~isempty(syncdir)
+        add_img_to_behav(new_bdir, bfile, idir, syncdir);
 
-  else
-      disp(['data quality criteria excluded trial ' num2str(ii)])
-  end
+    else
+      	disp(['data quality criteria excluded trial ' num2str(ii)])
+    end
     
+  catch
+        disp('stitch error')
+  end
+      
 end
 delete(gcp('nocreate'))
 
+cd(new_bdir)
 
 mcorr_azPL(pwd, ref_img);
 auto_process_roi_v2(pwd);
 add_azPL_auto_roi_data(pwd);
-
+% 
 plot_azPl_roi_by_trial(pwd, 2, 1);
 plot_azPL_cool_align_sequence(pwd, 1);
-%plot_azPL_cool_align_errortrial(pwd, 1);
+plot_azPL_cool_align_errortrial(pwd, 1);
 adaptation_idx(pwd, 1);
 
+%process_azPL_multisense_exp(pwd)
 
 dashes = strfind(new_bdir, '\');
 last_bdash_idx = dashes(end);

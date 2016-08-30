@@ -72,7 +72,7 @@ for ii = 1:num_stim_types
                 interp_dFs = spline(tStamps, c_dFs,...
                                 linspace(tstamp_i, tstamp_n, num_interp_vals));
                             
-                summary_stim(ii).rois(kk).dFs(jj,:) = interp_dFs;
+                summary_stim(ii).rois(kk).dFs(jj,:)   = interp_dFs;
                 summary_stim(ii).rois(kk).i_tstamp    = linspace(tstamp_i, tstamp_n, num_interp_vals);
             end
         

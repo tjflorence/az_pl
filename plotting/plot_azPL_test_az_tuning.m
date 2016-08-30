@@ -96,10 +96,10 @@ for c_roi = 1:length(roi_auto_struct);
 
     for ii = 1:8
 
-        plot([0 pre_xvals(ii,1)], [0 pre_yvals(ii,1)], 'b')
+        plot([0 pre_xvals(ii,1)], [0 -pre_yvals(ii,1)], 'b')
             hold on
 
-        scatter(pre_xvals(ii,1), pre_yvals(ii,1), 'b')
+        scatter(pre_xvals(ii,1), -pre_yvals(ii,1), 'b')
         hold on
 
 
@@ -107,17 +107,17 @@ for c_roi = 1:length(roi_auto_struct);
     xlim([-1 1])
     ylim([-1 1])
 
-    plot([0 pre_mean_x], [0 pre_mean_y], 'b', 'linewidth', 2)
-    s1_p = scatter(pre_mean_x, pre_mean_y, 'b', 'linewidth', 2);
+    plot([0 pre_mean_x], [0 -pre_mean_y], 'b', 'linewidth', 2)
+    s1_p = scatter(pre_mean_x, -pre_mean_y, 'b', 'linewidth', 2);
     set(s1_p, 'MarkerFaceColor', 'b')
 
     for ii = 1:8
 
         hold on
 
-        plot([0 post_xvals(ii)], [0 post_yvals(ii)], 'r')
+        plot([0 post_xvals(ii)], [0 -post_yvals(ii)], 'r')
 
-        scatter(post_xvals(ii), post_yvals(ii), 'r')
+        scatter(post_xvals(ii), -post_yvals(ii), 'r')
         hold on
 
 
@@ -126,8 +126,8 @@ for c_roi = 1:length(roi_auto_struct);
     xlim([-1 1])
     ylim([-1 1])
 
-    plot([0 post_mean_x], [0 post_mean_y], 'r', 'linewidth', 2)
-    s2_p = scatter(post_mean_x, post_mean_y, 'r', 'linewidth', 2);
+    plot([0 post_mean_x], [0 -post_mean_y], 'r', 'linewidth', 2)
+    s2_p = scatter(post_mean_x, -post_mean_y, 'r', 'linewidth', 2);
     set(s2_p, 'MarkerFaceColor', 'r')
 
     [X,Y]=circle([0 0],1,1000);

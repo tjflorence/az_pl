@@ -1,4 +1,4 @@
-function add_azPL_roi_data(expdir)
+function add_azPL_oct_roi_data(expdir, trial)
 
 cd(expdir)
 exp_files = dir('env*');
@@ -8,7 +8,7 @@ load('roi_data.mat')
 
                  
 %% add roi for each trial                             
-for aa = 1:length(exp_files)
+for aa = trial
     
     load(exp_files(aa).name)
     if isfield(expr.c_trial, 'idata')
@@ -25,11 +25,12 @@ for aa = 1:length(exp_files)
         
         end
         
-        expr.c_trial.idata.roi_traces(ii,:) = (expr.c_trial.idata.roi_traces(ii,:)-mean(expr.c_trial.idata.roi_traces(ii,:)) )...
-                                                        ./prctile(expr.c_trial.idata.roi_traces(ii,:), 10);
-        
+            expr.c_trial.idata.roi_traces(ii,:) = (expr.c_trial.idata.roi_traces(ii,:)-mean(expr.c_trial.idata.roi_traces(ii,:)) )...
+                                                ./prctile(expr.c_trial.idata.roi_traces(ii,:), 10);
+                                            
     end
     
+
     save(exp_files(aa).name, 'expr', '-v7.3')
     end
     

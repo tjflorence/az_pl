@@ -1,12 +1,23 @@
-function plot_azPL_multisense_by_stim(expdir)
+function plot_azPL_multisense_by_stim(expdir, is_auto)
 
 cd(expdir)
 
 load('multisense_summary_data.mat')
-load('auto_roi_data.mat')
+if is_auto == 1
+    
+    load('auto_roi_data.mat')
+    roi_struct = roi_auto_struct;
 
-roi_struct = roi_auto_struct;
+else
+    
+    load('roi_data.mat')
+    load('auto_roi_data.mat')
+
+end
 cMap = [zeros(3,1) zeros(3, 1) linspace(0,1,3)'];
+
+whitebg('w')
+close all
 
 for c_roi = 1:length(roi_struct);
     for stim_num = 1:length(summary_stim)
@@ -19,7 +30,7 @@ for c_roi = 1:length(roi_struct);
 
     % subplot 1: image of ROI
     s1 = subplot(4,1,1);
-    imagesc(roi_struct(c_roi).present_map)
+    imagesc(roi_auto_struct(c_roi).present_map)
     axis equal off tight
     colormap(gray)
     
@@ -35,8 +46,8 @@ for c_roi = 1:length(roi_struct);
     x_data = summary_stim(stim_num).rois(c_roi).i_tstamp;
     raw_dF_data = summary_stim(stim_num).rois(c_roi).dFs;
     
-    for ii = 1:3
-    
+    for ii = 1:size(raw_dF_data, 1);
+   
         plot(x_data, raw_dF_data(ii,:), 'color', cMap(ii,:))
         hold on
     
@@ -44,7 +55,7 @@ for c_roi = 1:length(roi_struct);
     plot([-100 100], [0 0], 'k')
     plot(x_data, summary_stim(stim_num).rois(c_roi).mean_dF, 'k', 'linewidth', 2);
     xlim([0 50])
-    ylim([-.1 .5])
+    ylim([-.1 .8])
     
     set(gca, 'XTick', [], 'Fontsize', 25)
     box off
@@ -92,7 +103,7 @@ for c_roi = 1:length(roi_struct);
     x_data = summary_stim(stim_num).b_tstamp;
     raw_yaw_data = summary_stim(stim_num).yaw_data;
     
-    for ii = 1:3
+    for ii = 1:size(raw_yaw_data, 1)
     
         plot(x_data, raw_yaw_data(ii,:), 'color', cMap(ii,:))
         hold on
@@ -122,9 +133,14 @@ for c_roi = 1:length(roi_struct);
     mkdir('plots')
     cd('plots')
     
-    plot_name = ['stim_summary_ROI_' num2str(c_roi, '%03d') ...
+    if is_auto
+        plot_name = ['stim_summary_ROI_' num2str(c_roi, '%03d') ...
                     '_STIM_' num2str(stim_num, '%03d')];
-                
+    else
+       plot_name = ['stim_summary_hand_ROI_' num2str(c_roi, '%03d') ...
+                    '_STIM_' num2str(stim_num, '%03d')];
+    end
+    
     prettyprint(f1, plot_name);
     close all
     cd(expdir)

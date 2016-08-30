@@ -23,6 +23,10 @@ while found_idata == 0
         max_y = max(y_vec);
         max_y_ind = find(y_vec==max_y);
         
+        x_vec = mean(mid_corr_frame, 1);
+        max_x = max(x_vec);
+        max_x_ind = find(x_vec==max_x);
+        
     else
         
         c_file = c_file+1;
@@ -50,17 +54,26 @@ for jj = 1:num_expfiles
         
         expr.c_trial.idata.mean_frame_within_trial = mid_corr_frame;
         expr.c_trial.idata.target_y_ind = max_y_ind;
-        
+        expr.c_trial.idata.target_x_ind = max_x_ind;
+                
         mean_frame =  mean(expr.c_trial.idata.frame_MIP, 3);
+        
         y_vec = mean(mean_frame, 2);
         max_y = max(y_vec);
         cmax_y_ind = find(y_vec==max_y);
         
+        x_vec = mean(mid_corr_frame, 1);
+        max_x = max(x_vec);
+        cmax_x_ind = find(x_vec==max_x);
+        
+        expr.c_trial.idata.cmax_x_ind = cmax_x_ind;
         expr.c_trial.idata.cmax_y_ind = cmax_y_ind;
+        
         expr.c_trial.idata.diff_y = expr.c_trial.idata.target_y_ind - expr.c_trial.idata.cmax_y_ind;
+        expr.c_trial.idata.diff_x = expr.c_trial.idata.target_x_ind - expr.c_trial.idata.cmax_x_ind;
         
         expr.c_trial.idata.mcorr_dF = circshift(expr.c_trial.idata.df_frames, ...
-                                        [round(expr.c_trial.idata.diff_y), 0, 0]);
+                                        [round(expr.c_trial.idata.diff_y), round(expr.c_trial.idata.diff_x), 0]);
 
 
         save(exp_files(jj).name, 'expr', '-v7.3')

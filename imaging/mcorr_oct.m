@@ -1,4 +1,4 @@
-function mcorr_azPL(exppath, ref_img)
+function mcorr_oct(exppath, ref_img, trial)
 
 if nargin < 2
     ref_img = [];
@@ -20,7 +20,7 @@ if isempty(ref_img)
 
     while found_idata == 0
    
-        load(exp_files(mid_expfile+c_file).name)
+        load(exp_files(trial).name)
     
         if isfield(expr.c_trial, 'idata')
         
@@ -32,14 +32,9 @@ if isempty(ref_img)
                                         
             ref_img = export_ref_img;
             
-        y_vec = mean(ref_img, 2);
-        max_y = max(y_vec);
-        max_y_ind = find(y_vec==max_y);
-        
-        x_vec = mean(ref_img, 1);
-        max_x = max(x_vec);
-        max_x_ind = find(x_vec==max_x);
-        
+            y_vec = mean(ref_img, 2);
+            max_y = max(y_vec);
+            max_y_ind = find(y_vec==max_y);
         
             found_idata = 1;
         
@@ -55,21 +50,17 @@ if isempty(ref_img)
     
 else
     
-        y_vec = mean(ref_img, 2);
-        max_y = max(y_vec);
-        max_y_ind = find(y_vec==max_y);
-        
-        x_vec = mean(ref_img, 1);
-        max_x = max(x_vec);
-        max_x_ind = find(x_vec==max_x);
-        
+            y_vec = mean(ref_img, 2);
+            max_y = max(y_vec);
+            max_y_ind = find(y_vec==max_y);
+    
 
 end
 
 
-for jj = 1:num_expfiles
+for jj = trial
     
-    load(all_files(jj).name)
+    load(exp_files(jj).name)
     
     if isfield(expr.c_trial, 'idata')
 
@@ -82,31 +73,20 @@ for jj = 1:num_expfiles
         
         expr.c_trial.idata.global_ref_img = ref_img;
         
-        
-        
-        expr.c_trial.idata.target_y_ind = max_y_ind;
-        expr.c_trial.idata.target_x_ind = max_x_ind;
-                
         mean_frame =  mean(expr.c_trial.idata.frame_MIP, 3);
         
         y_vec = mean(mean_frame, 2);
         max_y = max(y_vec);
         cmax_y_ind = find(y_vec==max_y);
         
-        x_vec = mean(ref_img, 1);
-        max_x = max(x_vec);
-        cmax_x_ind = find(x_vec==max_x);
-        
-        expr.c_trial.idata.cmax_x_ind = cmax_x_ind;
         expr.c_trial.idata.cmax_y_ind = cmax_y_ind;
-        
+        expr.c_trial.idata.target_y_ind = max_y_ind;
         expr.c_trial.idata.diff_y = expr.c_trial.idata.target_y_ind - expr.c_trial.idata.cmax_y_ind;
-        expr.c_trial.idata.diff_x = expr.c_trial.idata.target_x_ind - expr.c_trial.idata.cmax_x_ind;
         
-        pre_correct_shift = circshift(expr.c_trial.idata.frame_MIP, ...
-                                        [round(expr.c_trial.idata.diff_y), round(expr.c_trial.idata.diff_x), 0]);
+       % pre_correct_shift = circshift(expr.c_trial.idata.frame_MIP, ...
+        %                                [round(expr.c_trial.idata.diff_y), 0, 0]);
         
-       %pre_correct_shift = expr.c_trial.idata.frame_MIP;
+       pre_correct_shift = expr.c_trial.idata.frame_MIP;
         %% motion correct
         img_obj = nia_movie();
         img_obj.loadFlatMovie(pre_correct_shift);

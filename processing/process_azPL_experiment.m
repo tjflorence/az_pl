@@ -49,7 +49,7 @@ summary_data.cool_time = nan(1,num_train_files);
 summary_data.time_to_cool = nan(1,num_train_files);
 summary_data.left_cool = nan(1,num_train_files);
 summary_data.time_to_leave = nan(1,num_train_files);
-
+summary_data.train_quadPI = nan(1,num_train_files);
 
 for ii = 1:num_test_files
     
@@ -74,6 +74,7 @@ for ii = 1:length(train_files)
     summary_data.cool_time(ii) = expr.c_trial.data.cool_time;
     summary_data.time_to_cool(ii) = expr.c_trial.data.time_to_cool;
     summary_data.left_cool(ii) = expr.c_trial.data.left_cool;
+    summary_data.train_quadPI(ii) = expr.c_trial.data.PI_2quad_60; 
     summary_data.time_to_leave(ii) = expr.c_trial.data.time_to_leave;
     
 end
