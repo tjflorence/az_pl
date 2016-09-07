@@ -1,4 +1,4 @@
-function plot_azPL_cool_align_sequence(expdir, is_auto)
+function plot_azPL_cool_align_direction(expdir, is_auto)
 
 train_files = dir('env_train*');
 %train_files = train_files(1:10);
@@ -20,12 +20,16 @@ lag_seconds = 5;
 for c_roi = 1:length(roi_struct)
     
     aligned_traces = [];
+    from_right = [];
+    
     for c_trial = 1:length(train_files)
        
         load(train_files(c_trial).name)
         
         if isfield(expr.c_trial, 'bdata')
+            y_vals = (mod(expr.c_trial.bdata.th(1:expr.c_trial.bdata.count)+180, 360)/360)*96;
             cool_half_second = zeros(1,length(expr.c_trial.bdata.laser_power)-25);
+            
             for ii = 1:(length(expr.c_trial.bdata.laser_power)-25)
                 test_vec = expr.c_trial.bdata.laser_power(ii:ii+25);
                 num_cool_frames = numel(find(test_vec<expr.settings.light_power));
@@ -36,8 +40,9 @@ for c_roi = 1:length(roi_struct)
                 end
                 
             end
+         
         first_cool = find(cool_half_second==1,1, 'first');
-        
+        mean_lead_idx = mean(yvals((first_cool-10):first_cool);
         if ~isempty(first_cool)
            
             lead_idx = first_cool-(lead_seconds*expr.settings.hz);

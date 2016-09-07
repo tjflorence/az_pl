@@ -48,14 +48,14 @@ for c_roi = 1:length(roi_struct);
     
     for ii = 1:size(raw_dF_data, 1);
    
-        plot(x_data, raw_dF_data(ii,:), 'color', cMap(ii,:))
+        plot(x_data, raw_dF_data(ii,:)-mean(raw_dF_data(ii,500:1000)), 'color', cMap(ii,:))
         hold on
     
     end
     plot([-100 100], [0 0], 'k')
-    plot(x_data, summary_stim(stim_num).rois(c_roi).mean_dF, 'k', 'linewidth', 2);
+    plot(x_data, summary_stim(stim_num).rois(c_roi).mean_dF-mean(summary_stim(stim_num).rois(c_roi).mean_dF(500:1000)), 'k', 'linewidth', 2);
     xlim([0 50])
-    ylim([-.1 .8])
+    ylim([-.1 1.5])
     
     set(gca, 'XTick', [], 'Fontsize', 25)
     box off

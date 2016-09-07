@@ -1,4 +1,4 @@
-function plot_azPL_cool_align_sequence(expdir, is_auto)
+function plot_azPL_cool_align_direction(expdir, is_auto)
 
 train_files = dir('env_train*');
 %train_files = train_files(1:10);
@@ -15,17 +15,21 @@ else
 end
 
 lead_seconds = 3;
-lag_seconds = 5;
+lag_seconds = 10;
 
 for c_roi = 1:length(roi_struct)
     
     aligned_traces = [];
+    from_right = [];
+    
     for c_trial = 1:length(train_files)
        
         load(train_files(c_trial).name)
         
         if isfield(expr.c_trial, 'bdata')
+            yvals = (mod(expr.c_trial.bdata.th(1:expr.c_trial.bdata.count)+180, 360)/360)*96;
             cool_half_second = zeros(1,length(expr.c_trial.bdata.laser_power)-25);
+            
             for ii = 1:(length(expr.c_trial.bdata.laser_power)-25)
                 test_vec = expr.c_trial.bdata.laser_power(ii:ii+25);
                 num_cool_frames = numel(find(test_vec<expr.settings.light_power));
@@ -36,7 +40,9 @@ for c_roi = 1:length(roi_struct)
                 end
                 
             end
+         
         first_cool = find(cool_half_second==1,1, 'first');
+        mean_lead_idx = mean(yvals((first_cool-10):first_cool));
         
         if ~isempty(first_cool)
            
@@ -58,6 +64,12 @@ for c_roi = 1:length(roi_struct)
                 c_trace = c_trace(1:(expected_hz*(lead_seconds+lag_seconds)));
                 c_trace = c_trace-mean(c_trace(1:10));
                 aligned_traces = [aligned_traces; c_trace];
+                
+                if mean_lead_idx > 48
+                    from_right = [from_right; 1];
+                else
+                    from_right = [from_right; 0];
+                end
 
             end
             
@@ -74,8 +86,14 @@ cMap =  [linspace(0, 1, size(aligned_traces, 1))' zeros(size(aligned_traces,1 ),
 f1 = figure('color', 'w', 'units','normalized', 'visible', 'off');
 for ii = 1:size(aligned_traces, 1)
    
+    if from_right(ii) == 1
+        trace_color = 'r';
+    else
+        trace_color = 'b';
+    end
+    
     plot(linspace(-lead_seconds,lag_seconds,size(aligned_traces,2)), aligned_traces(ii,:), ...
-        'color', cMap(ii,:), 'linewidth', 1);
+        'color',trace_color, 'linewidth', 1);
     
     hold on
     
@@ -93,7 +111,7 @@ end
     
     mkdir('plots')
     cd('plots')
-    prettyprint(f1, ['cool_alighed_traces_ROI_' num2str(c_roi) '_sequence'])
+    prettyprint(f1, ['cool_alighed_direction_traces_ROI_' num2str(c_roi) '_sequence'])
     
     cd(expdir)
 end

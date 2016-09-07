@@ -41,9 +41,10 @@ toc
 
 ref_img = [];
 
-process_azPL_experiment(new_bdir)
-parse_azPL_experiment(new_bdir, new_idir, 3, 65)
+% process_azPL_experiment(new_bdir)
+parse_azPL_experiment(new_bdir, new_idir, 5, 65)
 cd(new_bdir)
+
 try
     delete(['stack_data.mat'])
 catch
@@ -81,12 +82,12 @@ mcorr_azPL(pwd, ref_img);
 auto_process_roi_v2(pwd);
 add_azPL_auto_roi_data(pwd);
 % 
-  plot_azPl_roi_by_trial(pwd, 2, 1);
-  plot_azPL_cool_align_sequence(pwd, 1);
-% % plot_azPL_cool_align_errortrial(pwd, 1);
- adaptation_idx(pwd, 1);
+%   plot_azPl_roi_by_trial(pwd, 2, 1);
+%   plot_azPL_cool_align_sequence(pwd, 1);
+% % % plot_azPL_cool_align_errortrial(pwd, 1);
+%  adaptation_idx(pwd, 1);
 
-% process_azPL_multisense_exp(pwd)
+process_azPL_multisense_exp(pwd)
 
 dashes = strfind(new_bdir, '\');
 last_bdash_idx = dashes(end);
@@ -96,5 +97,4 @@ copyfile([new_bdir '\' ], [processed_data_server  new_bdir(last_bdash_idx+1:end)
 cd('C:\')
 rmdir(new_bdir, 's')
 rmdir(new_idir, 's');
-
 
